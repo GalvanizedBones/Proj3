@@ -54,7 +54,9 @@ public:
 
 	virtual void doSomething() {
 		//do nothing
+		//test/
 	}
+
 
 private:
 	int m_maxHP;
