@@ -148,6 +148,32 @@
 							//Add turnig 14 pixel to left of center of the smallgon ship
 							//Play a SOUND_ALIEN_SHOOT fx
 							//End current tick
+			 int px = thisGameWorld()->getPlayerX(); 
+			 int py = thisGameWorld()->getPlayerY();
+
+			 if (px < x) {
+				 //Player to the left
+				 if (py <= y + 4 && py >= y - 4) {
+					 //In vertical range
+						//Target acquired.....
+					 int smlchance = (20 / thisGameWorld()->getLevel()) + 5;
+					 int randSShoot = rand() % smlchance;
+					 if (randSShoot == 1) //1 in smlChance chance
+					 {
+						 Actor* shoot = new Cabbage(thisGameWorld(), IID_CABBAGE, x - 16, y); //Spawn 12 to right
+						 thisGameWorld()->addActor(shoot);
+						 //Play sound
+						 thisGameWorld()->playSound(SOUND_ALIEN_SHOOT);
+
+					 }
+				 }
+				 
+
+
+
+
+
+			 }
 
 
 			 //6) Smallgon will try to move in current direction

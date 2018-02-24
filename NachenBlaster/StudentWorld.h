@@ -24,6 +24,8 @@ public:
 	bool checkPotentialActorMoveInBounds(double x, double y);
 	bool collisionCheck(Actor* hitter);
 	double eucledianDist(Actor* source, Actor* target);
+	int getPlayerX() { return m_player->getX(); }
+	int getPlayerY() { return m_player->getY();  }
 
 
 
