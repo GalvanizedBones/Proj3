@@ -264,3 +264,25 @@
 
 
  }
+
+
+ /////////////////Shootingactor
+
+void ShootingActor::collide(double damage) {
+	 subractHealth(damage);
+	 //Incurring damage! 
+	 //Either by a torpedo collision
+	 //or a collision with another ship!
+	 if (getHealth() < 0) {
+		 setAlive(false);
+		 postDeath(); 
+	 }
+ }
+
+
+///////////////SMALLGON
+void Smallgon::postDeath() {
+        	(thisGameWorld())->incPlayerKillCount();
+	//Make Explosion
+
+}

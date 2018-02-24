@@ -314,9 +314,12 @@ void StudentWorld::buryTheDead() {
 			if (!(*marker)->isAlive())
 			{
 				//(*marker)->setVisible(false);		//delete
+				if ((*marker)->isAlien()) {
+					decNPC_Count();
+				}
      			delete *marker;
 				marker = m_actorList.erase(marker); //if out of boundaries
-				decNPC_Count();
+				
 			}
 			else {
 				marker++;

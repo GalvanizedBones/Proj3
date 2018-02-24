@@ -27,6 +27,7 @@ public:
 	virtual bool isBackground() = 0;
 	virtual bool isHuman() = 0; 
 	virtual bool isGoodie() = 0;
+	virtual bool isAlien() = 0;
 
 private:
 	bool m_alive;
@@ -53,6 +54,7 @@ public:
 	virtual bool isBackground() { return true; }
 	virtual bool isHuman() {return false;}
 	virtual bool isGoodie() { return false; }
+	virtual bool isAlien() { return false; }
 private:
 };
 
@@ -137,15 +139,9 @@ public:
 		return m_specialAmmo;
 	}
 
-	virtual void collide(double damage) {
-		subractHealth(damage);
-		//Incurring damage! 
-		//Either by a torpedo collision
-		//or a collision with another ship!
-		if (getHealth() < 0) {
-			setAlive(false);
-		}
-	}
+	virtual void collide(double damage);
+	virtual void postDeath() = 0;
+	virtual bool isAlien() = 0;
 
 
 
@@ -159,7 +155,7 @@ private:
 };
 
 class NonPlayerShootingActor : public ShootingActor {
-public: 
+public:
 	NonPlayerShootingActor(StudentWorld* thisGameWorld, int imageID, double startX, double startY, int maxHp, double damage, Direction dir, double size, unsigned int depth, int initSpecAmm, int initCommAmm, int flgtPthLgth, int speed)
 		:ShootingActor(thisGameWorld, imageID, startX, startY, maxHp, damage, dir, size, depth, initSpecAmm, initCommAmm),
 		m_flightPathLength(flgtPthLgth),
@@ -196,6 +192,7 @@ public:
 	bool checkFlownOffLeft(int x);
 	bool checkTopOrBottom(int y);
 	void decFlightPath() { m_flightPathLength--; }
+	bool isAlien() {return true;}
 
 
 
@@ -216,6 +213,8 @@ public:
 		{}
 	virtual void doSomething();
 	virtual bool isHuman() { return true; }
+	virtual bool isAlien() { return false; }
+	virtual void postDeath() {};
 
 
 
@@ -233,6 +232,7 @@ public:
 	}
 	virtual bool isHuman() { return false; }
 	virtual void doSomething();
+	virtual void postDeath(); 
 
 
 private:
@@ -253,6 +253,7 @@ public:
 	virtual bool isBackground() { return false; }
 	virtual bool isHuman() { return false; }
 	virtual bool isGoodie() { return false; }
+	virtual bool isAlien() { return false; }
 
 	virtual void collide(double damage) {
 		setAlive(false); //Cabbages are very weak
