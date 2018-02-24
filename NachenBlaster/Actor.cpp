@@ -125,6 +125,9 @@
 						//iii) left and down
 					 int Rdir = (rand() % 3) - 1;
 					 setOrientation(Rdir);
+
+					 int Rpth = (rand() % 32) + 1;
+					 setNPCPAthLength(Rpth);
 				 }
 				 else {
 					 //Randomly Select direction
@@ -135,7 +138,7 @@
 						// inbetween 1 and 32
 					 int Rdir = (rand() % 3) - 1;
 					 setOrientation(Rdir);
-					 int Rpth = (rand() % 32) + 1;
+					int  Rpth = (rand() % 32) + 1;
 					 setNPCPAthLength(Rpth);
 				 }
 
@@ -185,15 +188,26 @@
 					//Case 3: Due left, N=
 
 			 int N = getNPCSpeed();
+			 decFlightPath();
 			 switch (getOrientation()) {
 			 case(1):
+				 if (thisGameWorld()->checkPotentialNPCMoveInBounds(x - N, y + N) ){
 				 moveTo(x - N, y + N);
+				 }
+				 else {
+					 moveTo(x - N, y);
+				 }
 				 break;
 			 case(0):
-				 moveTo(x - N, y);
+					 moveTo(x - N, y);
 				 break;
 			 case (-1):
-				 moveTo(x - N, y - N);
+				 if (thisGameWorld()->checkPotentialNPCMoveInBounds(x - N, y - N)) {
+					 moveTo(x - N, y - N);
+				 }
+				 else {
+					 moveTo(x - N, y);
+				 }
 				 break;
 			 default:
 				 std::cerr << "errOrientation";
@@ -207,13 +221,6 @@
 		 else {
 			 setAlive(false); //Mark self dead if offscreen
 		 }
-	 
-	 
-	 
-	 
-	 
-	 
-	 
 	 }
 	 else {
 		 return; //Return immediately if dead...
@@ -237,7 +244,7 @@
  void Cabbage::doSomething() {
 	 double X = getX();
 	 double Y = getY();
-	 X = X + 2; //move to the right each tick
+	 X = X + 4; //move to the right each tick
 	 moveTo(X, Y);
 	 bool succ = (*thisGameWorld()).collisionCheck(this);
 
@@ -251,7 +258,7 @@
  void Turnip::doSomething() {
 	 double X = getX();
 	 double Y = getY();
-	 X = X - 2; //move to the left each tick
+	 X = X - 4; //move to the left each tick
 	 moveTo(X, Y);
 	 bool succ = (*thisGameWorld()).collisionCheck(this);
 

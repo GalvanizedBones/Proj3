@@ -195,6 +195,7 @@ public:
 
 	bool checkFlownOffLeft(int x);
 	bool checkTopOrBottom(int y);
+	void decFlightPath() { m_flightPathLength--; }
 
 
 

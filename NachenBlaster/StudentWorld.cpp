@@ -20,6 +20,11 @@ StudentWorld::StudentWorld(string assetDir)
 
 int StudentWorld::init()
 {
+	resetNPC_Count();
+	resetPlayerKillCount();
+	setNPC_ScreenMax(5 + .5*getLevel()); //compiler always truncates -- in player favor -- cant have 1/2 an alien
+	setLevelGoal(6 + (4 * getLevel()) );
+	
 	Actor* player = new NachenBlaster(this, IID_NACHENBLASTER, 0, 128);
 	m_player = player;
 	m_actorList.push_back(player);
@@ -119,20 +124,37 @@ if (newStar == 7) { //Lucky number seven babyyyy
 	m_actorList.push_back(bornStar);
 }
 
-//5) to make a new alien ship
-int S1 = 60;
-int S2 = 20 + getLevel() * 5;
-int S3 = 5 + getLevel() * 10;
-int S = S1 + S2 + S3;
 
-// S1/S chance for smallgon
-int randS = rand() % S; 
-if (randS < S1*.1) {
-	//Make new smallgon
-	int randSY = rand() % VIEW_HEIGHT;
-	double smlHP = 5 * (1 + (getLevel() - 1)*.1);
-	Actor* newSmallgon = new Smallgon(this, VIEW_WIDTH - 1, randSY, smlHP);
-	m_actorList.push_back(newSmallgon);
+int D = getPlayerKillCount();
+int T = getLevelGoal();
+int R = T - D;
+int M = getNPC_ScreenMax();
+int min = 0;
+(M > R) ? (min = R) : (min = M);
+			//True		//False		//If equal
+			//R smaller	//M Smallwe	//Doesn't matter, choose M
+int C = getNPC_Count();
+
+if (C < min) {
+
+	//5) to make a new alien ship
+	int S1 = 60;
+	int S2 = 20 + getLevel() * 5;
+	int S3 = 5 + getLevel() * 10;
+	int S = S1 + S2 + S3;
+
+	// S1/S chance for smallgon
+	int randS = rand() % S;
+	if (randS < S1*.05) {
+		//Make new smallgon
+		int randSY = rand() % VIEW_HEIGHT;
+		double smlHP = 5 * (1 + (getLevel() - 1)*.1);
+		Actor* newSmallgon = new Smallgon(this, VIEW_WIDTH - 1, randSY, smlHP);
+		m_actorList.push_back(newSmallgon);
+		incNPC_Count();
+	}
+
+
 }
 
 
@@ -183,6 +205,23 @@ bool StudentWorld::checkPotentialActorMoveInBounds(double x, double y) {
 
 	if (x < VIEW_WIDTH && x >= 0) {
 		//within X
+		if (y < VIEW_HEIGHT && y >= 0) {
+			//within Y
+			return true;
+		}
+		else { return false; }
+	}
+	else { return false; }
+
+
+
+}
+
+bool StudentWorld::checkPotentialNPCMoveInBounds(double x, double y) {
+
+	if (x < VIEW_WIDTH) {
+		//within X
+		//Nees to fly off screen to the left, allow crossing x=0
 		if (y < VIEW_HEIGHT && y >= 0) {
 			//within Y
 			return true;
@@ -275,8 +314,9 @@ void StudentWorld::buryTheDead() {
 			if (!(*marker)->isAlive())
 			{
 				//(*marker)->setVisible(false);		//delete
-     				delete *marker;
+     			delete *marker;
 				marker = m_actorList.erase(marker); //if out of boundaries
+				decNPC_Count();
 			}
 			else {
 				marker++;
