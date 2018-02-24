@@ -11,8 +11,9 @@ class Actor:public GraphObject {
 	//Actor is abstract, will not be possible to construct
 public:
 	Actor(int imageID, double startX, double startY, Direction dir = 0, double size = 1.0, unsigned int depth = 0)
-	: GraphObject(imageID, startX, startY, dir, size, depth), //simple constructor
-	m_alive(true)
+		: GraphObject(imageID, startX, startY, dir, size, depth), //simple constructor
+		m_alive(true),
+		m_frendly(true)
 	{	}
 
 	virtual void doSomething() = 0;
@@ -20,6 +21,8 @@ public:
 	virtual double getDamage() { return 0; };//Default do nothing
 	bool isAlive() { return m_alive; }
 	void setAlive(bool alive) { m_alive = alive; }
+	bool Frednly() { return m_frendly;  }
+	void setFriendly(bool frendOrFoe) { m_frendly = frendOrFoe; }
 	virtual bool isProjectile() = 0;
 	virtual bool isBackground() = 0;
 	virtual bool isHuman() = 0; 
@@ -27,6 +30,7 @@ public:
 
 private:
 	bool m_alive;
+	bool m_frendly;
 
 
 };
@@ -103,10 +107,14 @@ public:
 	//virtual void collide(double damage) = 0; //Reminder, on collision -- need to affect health
 
 	void subractHealth(double damage) {
-		m_HP = m_HP - damage; 
+		m_HP = m_HP - damage;
 		if (m_HP < 0) {
 			setAlive(false);
 		}
+	}
+
+	double getHealth() {
+		return m_HP;
 	}
 
 	void subractCommAmmo(double cAmmoUsed) {
@@ -127,6 +135,16 @@ public:
 	}
 	double getSpecAmmoSupply() {
 		return m_specialAmmo;
+	}
+
+	virtual void collide(double damage) {
+		subractHealth(damage);
+		//Incurring damage! 
+		//Either by a torpedo collision
+		//or a collision with another ship!
+		if (getHealth() < 0) {
+			setAlive(false);
+		}
 	}
 
 
@@ -164,6 +182,7 @@ public:
 	}
 
 	bool checkFlownOffLeft(int x);
+	bool checkTopOrBottom(int y);
 
 
 
@@ -184,12 +203,7 @@ public:
 	virtual void doSomething();
 	virtual bool isHuman() { return true; }
 
-	virtual void collide(double damage) {
-		subractHealth(damage);
-		//Incurring damage! 
-			//Either by a torpedo collision
-			//or a collision with another ship!
-	}
+
 
 private:
 
@@ -201,7 +215,7 @@ public:
 		:NonPlayerShootingActor(thisGameWorld, IID_SMALLGON, startX, startY, maxHp, 5, dir, size, depth, initSpecAmm, initCommAmm, flgtPthLgth, speed)
 	{ //Allow for short function call by default variables
 			//But also allows for potential 'Boss Smallgon' by slightly altering parameters
-
+		setFriendly(false);
 	}
 	virtual bool isHuman() { return false; }
 	virtual void doSomething();
@@ -241,14 +255,9 @@ public:
 {//Stars only exist
 }
 
-		virtual void doSomething() {
-			double X = getX();
-			double Y = getY();
-			X = X + 1; //move to the right each tick
-			moveTo(X, Y);
-		}
+	virtual void doSomething();
 
-		virtual void collide(double damage) {
+	virtual void collide(double damage) {
 			setAlive(false); //Cabbages are very weak
 		}
 

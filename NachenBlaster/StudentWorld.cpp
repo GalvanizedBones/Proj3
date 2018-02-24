@@ -119,6 +119,22 @@ if (newStar == 7) { //Lucky number seven babyyyy
 	m_actorList.push_back(bornStar);
 }
 
+//5) to make a new alien ship
+int S1 = 60;
+int S2 = 20 + getLevel() * 5;
+int S3 = 5 + getLevel() * 10;
+int S = S1 + S2 + S3;
+
+// S1/S chance for smallgon
+int randS = rand() % S; 
+if (randS < S1*.1) {
+	//Make new smallgon
+	int randSY = rand() % VIEW_HEIGHT;
+	double smlHP = 5 * (1 + (getLevel() - 1)*.1);
+	Actor* newSmallgon = new Smallgon(this, VIEW_WIDTH - 1, randSY, smlHP);
+	m_actorList.push_back(newSmallgon);
+}
+
 
 
 
@@ -188,27 +204,44 @@ bool StudentWorld::collisionCheck(Actor* hitter) {
 	
 	while (it != m_actorList.end() && (*hitter).isAlive() ){
 	//loop through every member of list
-		if (!(**it).isBackground() && (**it).isAlive() )
+		if (!(**it).isBackground() && (**it).isAlive() && (*it)!=hitter )
 		{//Only collideable objects
 			double R2 = (**it).getRadius();
 			if (eucledianDist(hitter, (*it)) < .75 * (R1 + R2)  ) {
 				//Within range of each other
 				//Officially collided!
 					//Call do damage to each function
-				(*hitter).collide((**it).getDamage());
+				if ( (*hitter).Frednly() ) //If source is friend
+				{
+					if ( !(**it).Frednly() ) //and target is foe
+					{
+						//Permit collision
+						(*hitter).collide((**it).getDamage());
+						(**it).collide((*hitter).getDamage()); //Netwons Third Law
+						return true;
+					}
+					else { it++; }
+				}
+				else { //If source if foe
+					if ( (**it).Frednly() ) { //and target is friend
+						//Permit collision
+						(*hitter).collide((**it).getDamage());
+						(**it).collide((*hitter).getDamage()); //Netwons Third Law
+						return true;
+					}
+					else { it++; }
+				}
 
 
-				return true;
+
 			}
-			else {
-				it++;
-			}
+			else {it++;	}
 
 		}
 		else
-		{
-			it++; //Increment if not collideable
-		}
+		{it++;
+		} //Increment if not collideable
+		
 	}
 	return false;
 }

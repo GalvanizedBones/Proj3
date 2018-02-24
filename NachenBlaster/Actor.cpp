@@ -71,16 +71,16 @@
 
 
  bool NonPlayerShootingActor::checkFlownOffLeft(int x) {
+	 if (x > 0) { return true; }
+		 else { return false; }
+ }
 
-	 if (x > 0) {
-		 return true;
-	 }
-	 else {
-		 return false;
-	 }
-
+ bool NonPlayerShootingActor::checkTopOrBottom(int y) {
+	 if (y == VIEW_HEIGHT-1 || y == 0) { return true; }
+	 else { return false; }
 
  }
+
 
 
  void Smallgon::doSomething() {
@@ -93,7 +93,65 @@
 		 double y = getY();
 		 //2) Check if flown off the left part of screen (passed player)
 		 if (checkFlownOffLeft(x)) {
-			 //3) Check if collided with player
+			 //3) Check if collided with player or projectile
+			 if ((*thisGameWorld()).collisionCheck(this)) {
+				 
+				 
+				 //QEFWFAWEGW
+				 //Make Explosion!!!
+				 //GAWERGARGVERV
+
+
+
+				 return; //Give it up, You're dead bub
+			 }
+
+			//4) Check if pathing needs an update
+			 if (getNPCPathLength() <= 0 || checkTopOrBottom(y) ) { //or at top/bottom of screen
+				 //Time to make a new path
+
+				 if (y >= VIEW_HEIGHT - 1) {
+					 //Go down and left
+				 }
+				 else if (y <= 0) {
+					 //Go up and left
+				 }
+				 else if (getNPCPathLength() <=0) {
+					 //Randomly Select direction
+						//i) left and up
+						//ii) due left
+						//iii) left and down
+				 }
+				 else {
+					 //Randomly Select direction
+						 //i) left and up
+						 //ii) due left
+						 //iii) left and down
+					 //Randomly select flight path
+						// inbetween 1 and 32
+				 }
+
+			 }
+
+			 //5) If Player is to the left of the Smallgon
+				// and Smallgon has a y coord within [-4 to 4] pixles of Playes
+					//Then, chance Smallgon will:
+						//Fire turnip toward Nachenblaster
+							//Add turnig 14 pixel to left of center of the smallgon ship
+							//Play a SOUND_ALIEN_SHOOT fx
+							//End current tick
+
+
+			 //6) Smallgon will try to move in current direction
+				//Reduce flight path by one
+					//Case 1: Move N up, N left 
+						//Where N is current travel speed
+					//Case 2: Move N down and N left
+						//Where N is current travel speed
+					//Case 3: Due left, N=
+
+			 //7) After moving, check again for a collision
+
 
 		 }
 		 else {
@@ -112,5 +170,25 @@
 	 }
 
 
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+ ///////////////////CABBAGE
+ void Cabbage::doSomething() {
+	 double X = getX();
+	 double Y = getY();
+	 X = X + 1; //move to the right each tick
+	 moveTo(X, Y);
+	 bool succ = (*thisGameWorld()).collisionCheck(this);
 
  }
