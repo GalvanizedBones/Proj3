@@ -160,7 +160,7 @@
 					 int randSShoot = rand() % smlchance;
 					 if (randSShoot == 1) //1 in smlChance chance
 					 {
-						 Actor* shoot = new Cabbage(thisGameWorld(), IID_CABBAGE, x - 16, y); //Spawn 12 to right
+						 Actor* shoot = new Turnip(thisGameWorld(), IID_TURNIP, x - 16, y); //Spawn 12 to right
 						 thisGameWorld()->addActor(shoot);
 						 //Play sound
 						 thisGameWorld()->playSound(SOUND_ALIEN_SHOOT);
@@ -237,8 +237,23 @@
  void Cabbage::doSomething() {
 	 double X = getX();
 	 double Y = getY();
-	 X = X + 1; //move to the right each tick
+	 X = X + 2; //move to the right each tick
 	 moveTo(X, Y);
 	 bool succ = (*thisGameWorld()).collisionCheck(this);
+
+ }
+
+
+
+
+ //////////////////////TURNIP
+
+ void Turnip::doSomething() {
+	 double X = getX();
+	 double Y = getY();
+	 X = X - 2; //move to the left each tick
+	 moveTo(X, Y);
+	 bool succ = (*thisGameWorld()).collisionCheck(this);
+
 
  }

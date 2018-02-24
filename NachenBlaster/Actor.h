@@ -253,6 +253,10 @@ public:
 	virtual bool isHuman() { return false; }
 	virtual bool isGoodie() { return false; }
 
+	virtual void collide(double damage) {
+		setAlive(false); //Cabbages are very weak
+	}
+
 
 private:
 
@@ -273,11 +277,22 @@ public:
 	virtual void collide(double damage) {
 			setAlive(false); //Cabbages are very weak
 		}
+private:
+
+};
+
+class Turnip: public Projectile {
+public:
+	Turnip(StudentWorld* thisGameWorld, int imageID, double startX, double startY, double damage = 2, Direction dir = 0, double size = 0.5, unsigned int depth = 1)
+		: Projectile(thisGameWorld, imageID, startX, startY, damage, dir, size, depth)
+	{//Stars only exist
+		setFriendly(false);
+	}
+
+	virtual void doSomething();
 
 
 private:
-
-
 
 };
 
