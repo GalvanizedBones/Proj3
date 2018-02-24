@@ -22,6 +22,9 @@ public:
 	bool checkInBounds(Actor* perp);
 	void addActor(Actor* newActor);
 	bool checkPotentialActorMoveInBounds(double x, double y);
+	bool collisionCheck(Actor* hitter);
+	double eucledianDist(Actor* source, Actor* target);
+
 
 
 

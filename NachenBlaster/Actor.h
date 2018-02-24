@@ -16,6 +16,8 @@ public:
 	{	}
 
 	virtual void doSomething() = 0;
+	virtual void collide(double dam) {}; //Default do nothing
+	virtual double getDamage() { return 0; };//Default do nothing
 	bool isAlive() { return m_alive; }
 	void setAlive(bool alive) { m_alive = alive; }
 	virtual bool isProjectile() = 0;
@@ -52,15 +54,32 @@ private:
 
 class CollideableActor : public Actor {
 public:
-	CollideableActor(int imageID, double startX, double startY, Direction dir, double size, unsigned int depth)
-		:Actor(imageID, startX, startY, dir, size, depth)
+	CollideableActor(StudentWorld* thisGameWorld, int imageID, double startX, double startY, double damage, Direction dir, double size, unsigned int depth)
+		:Actor(imageID, startX, startY, dir, size, depth),
+		m_gameWorld(thisGameWorld),
+		m_collisionDamage(damage)
 	{
-
 	}
+
 	virtual bool isBackground() { return false; }
 
 
+	//Able to call StudentWorld's Collide function 
+	StudentWorld* thisGameWorld() {
+		return m_gameWorld;
+	}
+
+	double getDamage() {
+		return m_collisionDamage;
+	}
+
+	virtual void collide(double damage) = 0; //ensure astract class
+
+
+
 private:
+	StudentWorld* m_gameWorld;
+	double m_collisionDamage; 
 
 
 
@@ -68,8 +87,8 @@ private:
 
 class ShootingActor : public CollideableActor {
 public: 
-	ShootingActor(int imageID, double startX, double startY, int maxHp, Direction dir, double size, unsigned int depth ,  int initSpecAmm, int initCommAmm)
-		:CollideableActor(imageID, startX, startY, dir, size, depth),
+	ShootingActor(StudentWorld* thisGameWorld, int imageID, double startX, double startY, int maxHp, double damage, Direction dir, double size, unsigned int depth,   int initSpecAmm, int initCommAmm)
+		:CollideableActor(thisGameWorld, imageID, startX, startY, damage, dir,   size, depth),
 		m_maxHP(maxHp),
 		m_HP(maxHp),
 		m_specialAmmo(initSpecAmm),
@@ -80,6 +99,35 @@ public:
 
 	bool isProjectile() { return false; }
 	bool isGoodie() { return false; }
+
+	//virtual void collide(double damage) = 0; //Reminder, on collision -- need to affect health
+
+	void subractHealth(double damage) {
+		m_HP = m_HP - damage; 
+		if (m_HP < 0) {
+			setAlive(false);
+		}
+	}
+
+	void subractCommAmmo(double cAmmoUsed) {
+		m_commonAmmo = m_commonAmmo - cAmmoUsed;
+		if (m_commonAmmo < 0) {
+			m_commonAmmo = 0; //no such thing as bullet debt
+		}
+	}
+	double getCommAmmoSupply() {
+		return m_commonAmmo;
+	 }
+
+	void subractSpecAmmo(double sAmmoUsed) {
+		m_specialAmmo = m_specialAmmo - sAmmoUsed;
+		if (m_specialAmmo < 0) {
+			m_specialAmmo = 0; //no such thing as bullet debt
+		}
+	}
+	double getSpecAmmoSupply() {
+		return m_specialAmmo;
+	}
 
 
 
@@ -94,8 +142,8 @@ private:
 
 class NonPlayerShootingActor : public ShootingActor {
 public: 
-	NonPlayerShootingActor(int imageID, double startX, double startY, int maxHp, Direction dir, double size, unsigned int depth, int initSpecAmm, int initCommAmm, int flgtPthLgth, int speed)
-		:ShootingActor( imageID,  startX,  startY, maxHp, dir, size, depth, initSpecAmm, initCommAmm),
+	NonPlayerShootingActor(StudentWorld* thisGameWorld, int imageID, double startX, double startY, int maxHp,double damage, Direction dir, double size, unsigned int depth, int initSpecAmm, int initCommAmm, int flgtPthLgth, int speed)
+		:ShootingActor(thisGameWorld, imageID,  startX,  startY, maxHp, damage, dir, size, depth,  initSpecAmm, initCommAmm),
 		m_flightPathLength(flgtPthLgth),
 		m_travelSpeed(speed)
 	{
@@ -128,20 +176,29 @@ private:
 class NachenBlaster : public ShootingActor {
 	//The Player Character
 public:
-	NachenBlaster(int imageID, double startX, double startY, StudentWorld* thisGameWorld)
-		: ShootingActor(imageID, startX, startY, 50, 0, 1, 0, 0, 100),
-		m_gameWorld(thisGameWorld)
+	NachenBlaster(StudentWorld* thisGameWorld, int imageID, double startX, double startY)
+		: ShootingActor(thisGameWorld, imageID, startX, startY,  500,  50, 0, 1, 0, 0, 30)
+															//Coll Dam    //dir  //depth //initComm(30Cabb)
+																     //HP    //Size //initSpec(0Torp)
 		{}
 	virtual void doSomething();
 	virtual bool isHuman() { return true; }
+
+	virtual void collide(double damage) {
+		subractHealth(damage);
+		//Incurring damage! 
+			//Either by a torpedo collision
+			//or a collision with another ship!
+	}
+
 private:
-	StudentWorld* m_gameWorld; 
+
 };
 
 class Smallgon : public NonPlayerShootingActor {
 public:
-	Smallgon(double startX, double startY, int maxHp, Direction dir=0, double size=1.5, unsigned int depth=1, int initSpecAmm=255, int initCommAmm=255, int flgtPthLgth=0, int speed= 2.0)
-		:NonPlayerShootingActor(IID_SMALLGON, startX, startY, maxHp, dir, size, depth, initSpecAmm, initCommAmm, flgtPthLgth, speed)
+	Smallgon(StudentWorld* thisGameWorld, double startX, double startY, int maxHp, Direction dir=0, double size=1.5, unsigned int depth=1, int initSpecAmm=255, int initCommAmm=255, int flgtPthLgth=0, int speed= 2.0)
+		:NonPlayerShootingActor(thisGameWorld, IID_SMALLGON, startX, startY, maxHp, 5, dir, size, depth, initSpecAmm, initCommAmm, flgtPthLgth, speed)
 	{ //Allow for short function call by default variables
 			//But also allows for potential 'Boss Smallgon' by slightly altering parameters
 
@@ -158,8 +215,8 @@ private:
 
 class Projectile : public CollideableActor {
 public:
-	Projectile(int imageID, double startX, double startY, Direction dir, double size , unsigned int depth )
-		: CollideableActor(imageID, startX, startY, dir, size, depth)
+	Projectile(StudentWorld* thisGameWorld, int imageID, double startX, double startY, double damage, Direction dir, double size , unsigned int depth )
+		: CollideableActor(thisGameWorld, imageID, startX, startY, damage, dir, size, depth)
 	{
 
 	}
@@ -179,8 +236,8 @@ private:
 
 class Cabbage : public Projectile {
 public:
-	Cabbage(int imageID, double startX, double startY, Direction dir = 0, double size = 0.5, unsigned int depth = 1)
-	: Projectile(imageID, startX, startY, dir, size, depth)
+	Cabbage(StudentWorld* thisGameWorld, int imageID, double startX, double startY, double damage = 2, Direction dir = 0, double size = 0.5, unsigned int depth = 1)
+	: Projectile(thisGameWorld, imageID, startX, startY, damage, dir, size, depth)
 {//Stars only exist
 }
 
@@ -189,8 +246,10 @@ public:
 			double Y = getY();
 			X = X + 1; //move to the right each tick
 			moveTo(X, Y);
+		}
 
-
+		virtual void collide(double damage) {
+			setAlive(false); //Cabbages are very weak
 		}
 
 
