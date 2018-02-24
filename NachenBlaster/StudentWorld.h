@@ -17,7 +17,15 @@ public:
     virtual int move();
     virtual void cleanUp();
 
+
+	void buryTheDead();
+	bool checkInBounds(Actor* perp);
+	void addActor(Actor* newActor);
+
+
+
 private:
+
 	std::list<Actor*> m_actorList;//The list of actors *Game foundation*
 	Actor* m_player;//The pointer to the player
 
