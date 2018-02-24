@@ -84,52 +84,6 @@ int StudentWorld::move()
 	std::list<Actor*>::iterator doer; //Create an iterator for the actors list
 	doer = m_actorList.begin();
 
-	//Interface with the player
-		//player is always first, may move doer forward
-	//doer++;
-
-	//1) Interface with player
-	//int userAction = 0;
-	//if (getKey(userAction)) {
-	//	double X = m_player->getX();
-	//	double Y = m_player->getY();
-	//	int step = 3;
-
-	//	switch (userAction) {
-
-	//	case KEY_PRESS_UP: //move up
-	//	{	m_player->moveTo(X, Y + step);
-	//	break;
-	//	}
-	//	case KEY_PRESS_DOWN: //move down
-	//	{	m_player->moveTo(X, Y - step);
-	//	break;
-	//	}
-	//	case KEY_PRESS_LEFT: //move left
-	//	{	m_player->moveTo(X - step, Y);
-	//	break;
-	//	}
-	//	case KEY_PRESS_RIGHT: //move right
-	//	{	m_player->moveTo(X + step, Y);
-	//	break;
-	//	}
-	//	case KEY_PRESS_ESCAPE: //leave game
-	//	{	return GWSTATUS_PLAYER_DIED;
-	//	break;
-	//	}
-	//	case KEY_PRESS_SPACE: //shoot cabbage
-	//	{	Actor* shoot = new Cabbage(IID_CABBAGE, X, Y, 0 ,.5, 1);
-	//	m_actorList.push_back(shoot);
-	//	break;
-	//	}
-	//	case KEY_PRESS_TAB: //shoot torpedo
-	//	{	break;
-	//	}
-
-	//	}
-
-	//}
-
 
 	//2) Have game objects doSomething
 	while (doer != m_actorList.end()) { //Check for end of list
@@ -206,8 +160,26 @@ bool StudentWorld::checkInBounds(Actor* perp) {
 		else { return false; }
 	}
 	else { return false; }
+}
+
+
+bool StudentWorld::checkPotentialActorMoveInBounds(double x, double y) {
+
+	if (x < VIEW_WIDTH && x >= 0) {
+		//within X
+		if (y < VIEW_HEIGHT && y >= 0) {
+			//within Y
+			return true;
+		}
+		else { return false; }
+	}
+	else { return false; }
+
+
 
 }
+
+
 void StudentWorld::buryTheDead() {
 	std::list<Actor*>::iterator marker;
 	marker = m_actorList.begin();
