@@ -112,15 +112,19 @@
 
 				 if (y >= VIEW_HEIGHT - 1) {
 					 //Go down and left
+					 setOrientation(-1);
 				 }
 				 else if (y <= 0) {
 					 //Go up and left
+					 setOrientation(1);
 				 }
 				 else if (getNPCPathLength() <=0) {
 					 //Randomly Select direction
 						//i) left and up
 						//ii) due left
 						//iii) left and down
+					 int Rdir = (rand() % 3) - 1;
+					 setOrientation(Rdir);
 				 }
 				 else {
 					 //Randomly Select direction
@@ -129,6 +133,10 @@
 						 //iii) left and down
 					 //Randomly select flight path
 						// inbetween 1 and 32
+					 int Rdir = (rand() % 3) - 1;
+					 setOrientation(Rdir);
+					 int Rpth = (rand() % 32) + 1;
+					 setNPCPAthLength(Rpth);
 				 }
 
 			 }
@@ -150,7 +158,23 @@
 						//Where N is current travel speed
 					//Case 3: Due left, N=
 
+			 int N = getNPCSpeed();
+			 switch (getOrientation()) {
+			 case(1):
+				 moveTo(x - N, y + N);
+				 break;
+			 case(0):
+				 moveTo(x - N, y);
+				 break;
+			 case (-1):
+				 moveTo(x - N, y - N);
+				 break;
+			 default:
+				 std::cerr << "errOrientation";
+			 }
+
 			 //7) After moving, check again for a collision
+			 (*thisGameWorld()).collisionCheck(this);
 
 
 		 }

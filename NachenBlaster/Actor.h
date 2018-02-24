@@ -160,12 +160,24 @@ private:
 
 class NonPlayerShootingActor : public ShootingActor {
 public: 
-	NonPlayerShootingActor(StudentWorld* thisGameWorld, int imageID, double startX, double startY, int maxHp,double damage, Direction dir, double size, unsigned int depth, int initSpecAmm, int initCommAmm, int flgtPthLgth, int speed)
-		:ShootingActor(thisGameWorld, imageID,  startX,  startY, maxHp, damage, dir, size, depth,  initSpecAmm, initCommAmm),
+	NonPlayerShootingActor(StudentWorld* thisGameWorld, int imageID, double startX, double startY, int maxHp, double damage, Direction dir, double size, unsigned int depth, int initSpecAmm, int initCommAmm, int flgtPthLgth, int speed)
+		:ShootingActor(thisGameWorld, imageID, startX, startY, maxHp, damage, dir, size, depth, initSpecAmm, initCommAmm),
 		m_flightPathLength(flgtPthLgth),
-		m_travelSpeed(speed)
+		m_travelSpeed(speed),
+		m_orientation(0)
 	{
 
+	}
+
+	void setOrientation(int orient) {
+		m_orientation = orient;
+	}
+
+	int getOrientation() {
+		return m_orientation;
+		//1: Up and Left
+		//0: Due Left
+		//-1: Down and Left
 	}
 
 	int getNPCSpeed() {
@@ -189,6 +201,7 @@ public:
 private: 
 	int m_flightPathLength;
 	int m_travelSpeed;
+	int m_orientation; 
 };
 
 
