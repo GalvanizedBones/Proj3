@@ -105,7 +105,7 @@ while (doer != m_actorList.end()) { //Check for end of list
 		}
 		if (getPlayerKillCount() >= getLevelGoal()) {
 			//Beat the level!
-			advanceToNextLevel();
+			//advanceToNextLevel(); **not to be used by student
 			return GWSTATUS_FINISHED_LEVEL;
 		}
 
@@ -263,19 +263,27 @@ bool StudentWorld::collisionCheck(Actor* hitter) {
 				{
 					if ( !(**it).Frednly() ) //and target is foe
 					{
-						//Permit collision
-						(*hitter).collide((**it).getDamage());
-						(**it).collide((*hitter).getDamage()); //Netwons Third Law
-						return true;
+						if (!((*hitter).isProjectile() && (**it).isProjectile())) //Projectiles pass through each other
+						{
+							//Permit collision
+							(*hitter).collide((**it).getDamage());
+							(**it).collide((*hitter).getDamage()); //Netwons Third Law
+							return true;
+						}
+						else { it++; }
 					}
 					else { it++; }
 				}
 				else { //If source if foe
 					if ( (**it).Frednly() ) { //and target is friend
-						//Permit collision
-						(*hitter).collide((**it).getDamage());
-						(**it).collide((*hitter).getDamage()); //Netwons Third Law
-						return true;
+						if (!((*hitter).isProjectile() && (**it).isProjectile())) //Projectiles pass through each other
+						{
+							//Permit collision
+							(*hitter).collide((**it).getDamage());
+							(**it).collide((*hitter).getDamage()); //Netwons Third Law
+							return true;
+						}
+						else { it++; }
 					}
 					else { it++; }
 				}

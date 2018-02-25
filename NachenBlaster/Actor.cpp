@@ -256,11 +256,43 @@
  //////////////////////TURNIP
 
  void Turnip::doSomething() {
-	 double X = getX();
-	 double Y = getY();
-	 X = X - 4; //move to the left each tick
-	 moveTo(X, Y);
-	 bool succ = (*thisGameWorld()).collisionCheck(this);
+	 //1) Check if alive
+	 if (isAlive()) {
+
+		 //2) Check if flown off screen
+		 if (thisGameWorld()->checkInBounds(this)) {
+			 //3) Check if collided yet
+			 if ((*thisGameWorld()).collisionCheck(this)) {
+				 //If collsion with player
+				 //Damage player  \
+				 //Set self dead   >taken care of in collide function
+				 //Do nothing else this tick
+				 return;
+			 }
+
+			 //4) If not collided, move to the left by 6
+			 double X = getX();
+			 double Y = getY();
+			 X = X - 6; //move to the left each tick
+			 moveTo(X, Y);
+
+			 //5) rotate self 20 deg CCW
+			 //Use set direction function from graphObject
+			 setDirection(getDirection()-20); //Guessing CCW is negative?
+									//Seems setDirection funct makes postive anyways...
+
+			 //6) After moving, check again for a collision
+			 if ((*thisGameWorld()).collisionCheck(this)) {
+				 //Same as part 3
+				 return;
+			 }
+		 }
+		 else {
+			 setAlive(false);
+			 //Mark dead if off screen
+		 }
+	 }
+	 //Dont do anything if not alive
 
 
  }
