@@ -23,6 +23,7 @@ public:
 	void addActor(Actor* newActor);
 	bool checkPotentialActorMoveInBounds(double x, double y);
 	bool checkPotentialNPCMoveInBounds(double x, double y);
+	bool checkPlayerCollision(Actor* perp);
 
 
 	bool collisionCheck(Actor* hitter);

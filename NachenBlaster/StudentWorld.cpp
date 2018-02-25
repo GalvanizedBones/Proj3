@@ -144,8 +144,8 @@ int C = getNPC_Count();
 if (C < min) {
 
 	//5) to make a new alien ship
-	int S1 = 60;
-	int S2 = 20 + getLevel() * 5;
+	int S1 = 0; //60
+	int S2 = 0 + getLevel() * 5; //20
 	int S3 = 5 + getLevel() * 10;
 	int S = S1 + S2 + S3;
 
@@ -260,6 +260,20 @@ bool StudentWorld::checkPotentialNPCMoveInBounds(double x, double y) {
 
 }
 
+
+bool StudentWorld::checkPlayerCollision(Actor* perp) {
+	double R1 = (*perp).getRadius();
+	double R2 = (*m_player).getRadius();
+
+	if ( eucledianDist(perp, m_player)  < .75 * (R1 + R2)) {
+		//within range of each other
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 bool StudentWorld::collisionCheck(Actor* hitter) {
 
 	//See if hitter is in a collideable distance to any other collideable actor
@@ -269,7 +283,7 @@ bool StudentWorld::collisionCheck(Actor* hitter) {
 	
 	while (it != m_actorList.end() && (*hitter).isAlive() ){
 	//loop through every member of list
-		if (!(**it).isBackground() && (**it).isAlive() && (*it)!=hitter )
+		if (!(**it).isBackground() && !(**it).isGoodie() && (**it).isAlive() && (*it)!=hitter )
 		{//Only collideable objects
 			double R2 = (**it).getRadius();
 			if (eucledianDist(hitter, (*it)) < .75 * (R1 + R2)  ) {
@@ -318,6 +332,8 @@ bool StudentWorld::collisionCheck(Actor* hitter) {
 	}
 	return false;
 }
+
+
 
 
 double StudentWorld::eucledianDist(Actor* source, Actor* target) {

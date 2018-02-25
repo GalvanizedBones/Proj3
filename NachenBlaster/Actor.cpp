@@ -337,8 +337,16 @@ bool Snagglegon::doSomethingSpecialNPC() {
 
 void Snagglegon::postDeath() {
 	(thisGameWorld())->incPlayerKillCount();
-	(thisGameWorld())->makeExplosion(getX(), getY());
-	//Make Explosion
+	(thisGameWorld())->makeExplosion(getX(), getY());//Make Explosion
+
+	//Small chance to make extra life goodie
+	int lifeGdy = rand() % 6;
+	if (lifeGdy == 1) {
+		Actor* lifeGdy = new ExtraLife( thisGameWorld(), IID_LIFE_GOODIE, getX(), getY() );
+		thisGameWorld()->addActor(lifeGdy);
+
+	}
+	
 
 }
 
@@ -470,5 +478,104 @@ void Smallgon::postDeath() {
         	(thisGameWorld())->incPlayerKillCount();
 			(thisGameWorld())->makeExplosion(getX(), getY());
 	//Make Explosion
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////GOODIE
+void Goodie::doSomething() {
+
+	//Fall
+	//check for collisions
+	//Call doSomethingGood 
+
+	//1) Check if alive
+	if (isAlive()) {
+
+		//2) Check if flown off screen
+		if (thisGameWorld()->checkInBounds(this)) {
+
+			//3) check for collsion
+			if (thisGameWorld()-> checkPlayerCollision(this)) {
+				doSomethingGood();
+				setAlive(false);
+				thisGameWorld()->playSound(SOUND_GOODIE);
+
+
+			}
+			else {
+				double x = getX();
+				double y = getY();
+				moveTo(x - .75, y - .75); //move down and left by .75
+
+				//Check if collided again
+
+
+			}
+
+
+
+
+
+		}
+		else {
+			setAlive(false);
+			return;
+		}
+	}
+	else {
+		return;
+	}
+
+}
+
+
+
+
+
+////////Extra life
+bool ExtraLife::doSomethingGood() {
+	//Add life 
+	//Add score
+
+	thisGameWorld()->incLives();
+
+	return true;
 
 }

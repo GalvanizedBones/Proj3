@@ -408,11 +408,51 @@ public:
 	virtual void doSomethingSpecific();
 
 private:
-	
+};
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Goodie : public CollideableActor {
+public:
+	Goodie(StudentWorld* thisGameWorld, int imageID, double startX, double startY, Direction dir, double size, unsigned int depth)
+		:CollideableActor(thisGameWorld, imageID, startX, startY, 0 , dir, size, depth)
+	{}
+	virtual void doSomething();
+	virtual bool doSomethingGood() = 0;
+
+	virtual void collide(double damage) {};
+
+
+
+private:
 
 };
 
+
+class ExtraLife : public Goodie {
+public:
+	ExtraLife(StudentWorld* thisGameWorld, int imageID, double startX, double startY, Direction dir=0, double size=.5, unsigned int depth=1)
+		:Goodie(thisGameWorld, imageID, startX, startY, dir, size, depth)
+	{}
+
+	virtual bool doSomethingGood();
+
+private:
+
+
+
+};
 
 
 #endif // ACTOR_H_
