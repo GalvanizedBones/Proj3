@@ -218,18 +218,17 @@ private:
 
 class NonPlayerShootingActor : public ShootingActor {
 public:
-	NonPlayerShootingActor(StudentWorld* thisGameWorld, int imageID, double startX, double startY, int maxHp, double damage, Direction dir, double size, unsigned int depth, int initSpecAmm, int initCommAmm, int flgtPthLgth, int speed)
-		:ShootingActor(thisGameWorld, imageID, startX, startY, maxHp, damage, dir, size, depth, initSpecAmm, initCommAmm),
+	NonPlayerShootingActor(StudentWorld* thisGameWorld, int imageID, double startX, double startY, int maxHp, double damage, Direction dir, double size, unsigned int depth, double flgtPthLgth, double speed)
+		:ShootingActor(thisGameWorld, imageID, startX, startY, maxHp, damage, dir, size, depth, 255, 255),
 		m_flightPathLength(flgtPthLgth),
 		m_travelSpeed(speed),
 		m_orientation(0)
-	{
+	{	}
 
-	}
+	virtual void doSomething(); 
+	virtual bool doSomethingSpecialNPC() = 0; 
 
-	void setOrientation(int orient) {
-		m_orientation = orient;
-	}
+	void setOrientation(int orient) {m_orientation = orient;}
 
 	int getOrientation() {
 		return m_orientation;
@@ -238,29 +237,23 @@ public:
 		//-1: Down and Left
 	}
 
-	int getNPCSpeed() {
-		return m_travelSpeed;
-	}
-	void setNPCSpeed(int newSpeed) {
-		m_travelSpeed = newSpeed;
-	}
-	int getNPCPathLength() {
-		return m_flightPathLength;
-	}
-	void setNPCPAthLength(int newLength) {
-		m_flightPathLength = newLength;
-	}
+	int getNPCSpeed() {	return m_travelSpeed;}
+	void setNPCSpeed(int newSpeed) {m_travelSpeed = newSpeed;}
+
+
+	int getNPCPathLength() {return m_flightPathLength;}
+	void setNPCPAthLength(int newLength) {m_flightPathLength = newLength;}
+	void decFlightPath() { m_flightPathLength--; }
 
 	bool checkFlownOffLeft(int x);
 	bool checkTopOrBottom(int y);
-	void decFlightPath() { m_flightPathLength--; }
 	bool isAlien() {return true;}
 
 
 
 private: 
-	int m_flightPathLength;
-	int m_travelSpeed;
+	double m_flightPathLength;
+	double m_travelSpeed;
 	int m_orientation; 
 };
 
@@ -286,22 +279,65 @@ private:
 
 class Smallgon : public NonPlayerShootingActor {
 public:
-	Smallgon(StudentWorld* thisGameWorld, double startX, double startY, int maxHp, Direction dir=0, double size=1.5, unsigned int depth=1, int initSpecAmm=255, int initCommAmm=255, int flgtPthLgth=0, int speed= 2.0)
-		:NonPlayerShootingActor(thisGameWorld, IID_SMALLGON, startX, startY, maxHp, 5, dir, size, depth, initSpecAmm, initCommAmm, flgtPthLgth, speed)
+	Smallgon(StudentWorld* thisGameWorld, double startX, double startY, int maxHp, Direction dir=0, double size=1.5, unsigned int depth=1, double flgtPthLgth=0, double speed= 2.0)
+		:NonPlayerShootingActor(thisGameWorld, IID_SMALLGON, startX, startY, maxHp, 5, dir, size, depth, flgtPthLgth, speed)
 	{ //Allow for short function call by default variables
 			//But also allows for potential 'Boss Smallgon' by slightly altering parameters
 		setFrendly(false);
 	}
 	virtual bool isHuman() { return false; }
-	virtual void doSomething();
+	virtual bool doSomethingSpecialNPC();
 	virtual void postDeath(); 
+private:
+};
+
+class Smoregon : public NonPlayerShootingActor {
+public:
+	Smoregon(StudentWorld* thisGameWorld, double startX, double startY, int maxHp, Direction dir = 0, double size = 1.5, unsigned int depth = 1, double flgtPthLgth = 0, double speed = 2.0)
+		:NonPlayerShootingActor(thisGameWorld, IID_SMOREGON, startX, startY, maxHp, 5, dir, size, depth, flgtPthLgth, speed)
+	{
+		setFrendly(false);
+	}
+	virtual bool isHuman() { return false; };
+	virtual bool doSomethingSpecialNPC();
+	virtual void postDeath();
+private:
+};
+
+class Snagglegon : public NonPlayerShootingActor {
+public:
+	Snagglegon(StudentWorld* thisGameWorld, double startX, double startY, int maxHp, Direction dir = 0, double size = 1.5, unsigned int depth = 1, double flgtPthLgth = 0, double speed = 1.75)
+		:NonPlayerShootingActor(thisGameWorld, IID_SNAGGLEGON, startX, startY, maxHp, 5, dir, size, depth, flgtPthLgth, speed)
+	{
+		setFrendly(false);
+		setOrientation(-1); //Begin down and left
+	}
+	virtual bool isHuman() { return false; };
+	virtual bool doSomethingSpecialNPC();
+	virtual void postDeath();
 
 
 private:
 
 
 
+
+
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class Projectile : public CollideableActor {
 public:

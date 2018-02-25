@@ -151,12 +151,29 @@ if (C < min) {
 
 	// S1/S chance for smallgon
 	int randS = rand() % S;
-	if (randS < S1 *.05) {
+	if (randS < S1 ) {
 		//Make new smallgon
-		int randSY = rand() % VIEW_HEIGHT;
+		int randSmlY = rand() % VIEW_HEIGHT;
 		double smlHP = 5 * (1 + (getLevel() - 1)*.1);
-		Actor* newSmallgon = new Smallgon(this, VIEW_WIDTH - 1, randSY, smlHP);
+		Actor* newSmallgon = new Smallgon(this, VIEW_WIDTH - 1, randSmlY, smlHP);
 		m_actorList.push_back(newSmallgon);
+		incNPC_Count();
+	}
+
+	else if (randS < (S1 + S2) && randS > S1) {
+		//Make new smoregon
+		int randSmrY = rand() % VIEW_HEIGHT;
+		double smrHP = 5 * (1 + (getLevel() - 1)*.1);
+		Actor* newSmoregon = new Smoregon(this, VIEW_WIDTH - 1, randSmrY, smrHP);
+		m_actorList.push_back(newSmoregon);
+		incNPC_Count();
+	}
+
+	else if (randS > (S1 + S2)) {
+		int randSngY = rand() % VIEW_HEIGHT;
+		double sngHP = 10 * (1 + (getLevel() - 1)*.1);
+		Actor* newSnagglegon = new Snagglegon(this, VIEW_WIDTH - 1, randSngY, sngHP);
+		m_actorList.push_back(newSnagglegon);
 		incNPC_Count();
 	}
 

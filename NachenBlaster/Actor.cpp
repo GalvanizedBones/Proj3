@@ -55,15 +55,14 @@
 		}
 		case KEY_PRESS_SPACE: //shoot cabbage
 		{	Actor* shoot = new Cabbage(thisGameWorld(), IID_CABBAGE, X+12, Y); //Spawn 12 to right
-			thisGameWorld()->addActor(shoot);
-			//Play sound
+			thisGameWorld()->addActor(shoot); //Add new object to game's object list
 			thisGameWorld()->playSound(SOUND_PLAYER_SHOOT);
 			break;
 		}
 		case KEY_PRESS_TAB: //shoot torpedo
 		{	
-			Actor* torp = new Torpedo(true, thisGameWorld(), IID_TORPEDO, X + 12, Y, 0);
-			thisGameWorld()->addActor(torp);
+			Actor* torp = new Torpedo(true, thisGameWorld(), IID_TORPEDO, X + 12, Y, 0);//Spawn 12 to right
+			thisGameWorld()->addActor(torp);//Add new object to game's object list
 			thisGameWorld()->playSound(SOUND_TORPEDO);
 			break;
 		}
@@ -85,10 +84,7 @@
 
  }
 
-
-
- void Smallgon::doSomething() {
-	 //Nows your time Smallgon! To action!
+ void NonPlayerShootingActor::doSomething() {
 	 
 	 //1) Check if alive
 	 if (isAlive()) {
@@ -99,20 +95,12 @@
 		 if (checkFlownOffLeft(x)) {
 			 //3) Check if collided with player or projectile
 			 if ((*thisGameWorld()).collisionCheck(this)) {
-				 
-				 
-				 //QEFWFAWEGW
-				 //Make Explosion!!!
-				 //GAWERGARGVERV
-
-
-
-				 return; //Give it up, You're dead bub
+				 return; //Taking fire! Abort further operations!
 			 }
 
-			//4) Check if pathing needs an update
-			 if (getNPCPathLength() <= 0 || checkTopOrBottom(y) ) { //or at top/bottom of screen
-				 //Time to make a new path
+			 //4) Check if pathing needs an update
+			 if (getNPCPathLength() <= 0 || checkTopOrBottom(y)) { //or at top/bottom of screen
+																   //Time to make a new path
 
 				 if (y >= VIEW_HEIGHT - 1) {
 					 //Go down and left
@@ -122,11 +110,11 @@
 					 //Go up and left
 					 setOrientation(1);
 				 }
-				 else if (getNPCPathLength() <=0) {
+				 else if (getNPCPathLength() <= 0) {
 					 //Randomly Select direction
-						//i) left and up
-						//ii) due left
-						//iii) left and down
+					 //i) left and up
+					 //ii) due left
+					 //iii) left and down
 					 int Rdir = (rand() % 3) - 1;
 					 setOrientation(Rdir);
 
@@ -135,91 +123,61 @@
 				 }
 				 else {
 					 //Randomly Select direction
-						 //i) left and up
-						 //ii) due left
-						 //iii) left and down
+					 //i) left and up
+					 //ii) due left
+					 //iii) left and down
 					 //Randomly select flight path
-						// inbetween 1 and 32
+					 // inbetween 1 and 32
 					 int Rdir = (rand() % 3) - 1;
 					 setOrientation(Rdir);
-					int  Rpth = (rand() % 32) + 1;
-					 setNPCPAthLength(Rpth);
 				 }
 
 			 }
 
-			 //5) If Player is to the left of the Smallgon
-				// and Smallgon has a y coord within [-4 to 4] pixles of Playes
-					//Then, chance Smallgon will:
-						//Fire turnip toward Nachenblaster
-							//Add turnig 14 pixel to left of center of the smallgon ship
-							//Play a SOUND_ALIEN_SHOOT fx
-							//End current tick
-			 int px = thisGameWorld()->getPlayerX(); 
-			 int py = thisGameWorld()->getPlayerY();
 
-			 if (px < x) {
-				 //Player to the left
-				 if (py <= y + 4 && py >= y - 4) {
-					 //In vertical range
-						//Target acquired.....
-					 int smlchance = (20 / thisGameWorld()->getLevel()) + 5;
-					 int randSShoot = rand() % smlchance;
-					 if (randSShoot == 1) //1 in smlChance chance
-					 {
-						 Actor* shoot = new Turnip(thisGameWorld(), IID_TURNIP, x - 16, y); //Spawn 12 to right
-						 thisGameWorld()->addActor(shoot);
-						 //Play sound
-						 thisGameWorld()->playSound(SOUND_ALIEN_SHOOT);
+			 //5) special to the variant 
+			 if (doSomethingSpecialNPC()) {
 
+
+
+				 //6) Will try to move 
+				 //Reduce flight path by one
+				 //Case 1: Move N up, N left 
+				 //Where N is current travel speed
+				 //Case 2: Move N down and N left
+				 //Where N is current travel speed
+				 //Case 3: Due left, N=
+
+				 int N = getNPCSpeed();
+				 decFlightPath();
+				 switch (getOrientation()) {
+				 case(1):
+					 if (thisGameWorld()->checkPotentialNPCMoveInBounds(x - N, y + N)) {
+						 moveTo(x - N, y + N);
 					 }
-				 }
-				 
-
-
-
-
-
-			 }
-
-
-			 //6) Smallgon will try to move in current direction
-				//Reduce flight path by one
-					//Case 1: Move N up, N left 
-						//Where N is current travel speed
-					//Case 2: Move N down and N left
-						//Where N is current travel speed
-					//Case 3: Due left, N=
-
-			 int N = getNPCSpeed();
-			 decFlightPath();
-			 switch (getOrientation()) {
-			 case(1):
-				 if (thisGameWorld()->checkPotentialNPCMoveInBounds(x - N, y + N) ){
-				 moveTo(x - N, y + N);
-				 }
-				 else {
+					 else {
+						 moveTo(x - N, y);
+					 }
+					 break;
+				 case(0):
 					 moveTo(x - N, y);
+					 break;
+				 case (-1):
+					 if (thisGameWorld()->checkPotentialNPCMoveInBounds(x - N, y - N)) {
+						 moveTo(x - N, y - N);
+					 }
+					 else {
+						 moveTo(x - N, y);
+					 }
+					 break;
+				 default:
+					 std::cerr << "errOrientation";
 				 }
-				 break;
-			 case(0):
-					 moveTo(x - N, y);
-				 break;
-			 case (-1):
-				 if (thisGameWorld()->checkPotentialNPCMoveInBounds(x - N, y - N)) {
-					 moveTo(x - N, y - N);
-				 }
-				 else {
-					 moveTo(x - N, y);
-				 }
-				 break;
-			 default:
-				 std::cerr << "errOrientation";
-			 }
 
-			 //7) After moving, check again for a collision
-			 (*thisGameWorld()).collisionCheck(this);
-
+				 //7) After moving, check again for a collision
+				 (*thisGameWorld()).collisionCheck(this);
+			 }//Spec says don't do these things if shoot
+				//Since it doesn't move forward when shooting, it kinda looks like recoil...
 
 		 }
 		 else {
@@ -232,7 +190,184 @@
 
 
 
+
+
+
  }
+
+
+
+ bool Smallgon::doSomethingSpecialNPC() {
+	 //Nows your time Smallgon! To action!
+
+
+	 //5) If Player is to the left of the smallgon
+	 // and Smallgon has a y coord within [-4 to 4] pixles of Playes
+	 //Then, chance Smallgon will:
+	 //Fire turnip toward Nachenblaster
+	 //Add turnig 14 pixel to left of center of the smallgon ship
+	 //Play a SOUND_ALIEN_SHOOT fx
+	 //End current tick
+	 int px = thisGameWorld()->getPlayerX();
+	 int py = thisGameWorld()->getPlayerY();
+	 int x = getX();
+	 int y = getY();
+
+	 if (px < x) {
+		 //Player to the left
+		 if (py <= y + 4 && py >= y - 4) {
+			 //In vertical range
+			 //Target acquired.....
+			 int smlchance = (20 / thisGameWorld()->getLevel()) + 5;
+			 int randSShoot = rand() % smlchance;
+			 if (randSShoot == 1) //1 in smlChance chance
+			 {
+				 Actor* shoot = new Turnip(thisGameWorld(), IID_TURNIP, x - 16, y); //Spawn 12 to right
+				 thisGameWorld()->addActor(shoot);
+				 //Play sound
+				 thisGameWorld()->playSound(SOUND_ALIEN_SHOOT);
+				 return false;
+			 }
+		 }
+	 }
+	 
+	 
+ }
+
+
+ ///////////////////////////SMOREGON
+
+bool Smoregon::doSomethingSpecialNPC() {
+
+	 //5) If Player is to the left of the smallgon
+	 // and Smallgon has a y coord within [-4 to 4] pixles of Playes
+	 //Then, chance Smallgon will:
+	 //Fire turnip toward Nachenblaster
+	 //Add turnig 14 pixel to left of center of the smallgon ship
+	 //Play a SOUND_ALIEN_SHOOT fx
+	 //End current tick
+	 int px = thisGameWorld()->getPlayerX();
+	 int py = thisGameWorld()->getPlayerY();
+	 int x = getX();
+	 int y = getY();
+
+	 if (px < x) {
+		 //Player to the left
+		 if (py <= y + 4 && py >= y - 4) {
+			 //In vertical range
+			 //Target acquired.....
+			 int smlchance = (20 / thisGameWorld()->getLevel()) + 5;
+			 int randSmore = rand() % smlchance;
+			 if (randSmore == 1) //1 in smlChance chance
+			 {
+				 Actor* shoot = new Turnip(thisGameWorld(), IID_TURNIP, x - 14, y); //Spawn 14 to left
+				 thisGameWorld()->addActor(shoot);
+				 thisGameWorld()->playSound(SOUND_ALIEN_SHOOT);
+				 return false;//dont continue
+			 }
+			 if (randSmore == 2) {
+				 setOrientation(0); //Set due left
+				 setNPCPAthLength(VIEW_WIDTH); //Unwavering!
+				 setNPCSpeed(5); //Ramming speed!
+				 return true; //continue
+
+			 }
+		 }
+	 }
+
+ }
+
+void Smoregon::postDeath() {
+	(thisGameWorld())->incPlayerKillCount();
+	(thisGameWorld())->makeExplosion(getX(), getY());
+	//Make Explosion
+
+}
+
+///////////////////SNAGGLEGON
+
+bool Snagglegon::doSomethingSpecialNPC() {
+
+	//Make sure never moves due left
+	if (getOrientation() == 0) {
+		int fiftyfifty = rand() % 2;
+		if (fiftyfifty) {
+			setOrientation(1);
+		}
+		else {
+			setOrientation(-1);
+		}
+	}
+
+	setNPCPAthLength(VIEW_HEIGHT); //ensure keeps going border to border
+
+
+	//5) If Player is to the left of the smallgon
+	// and Smallgon has a y coord within [-4 to 4] pixles of Playes
+	//Then, chance Smallgon will:
+	//Fire turnip toward Nachenblaster
+	//Add turnig 14 pixel to left of center of the smallgon ship
+	//Play a SOUND_ALIEN_SHOOT fx
+	//End current tick
+	int px = thisGameWorld()->getPlayerX();
+	int py = thisGameWorld()->getPlayerY();
+	int x = getX();
+	int y = getY();
+
+	if (px < x) {
+		//Player to the left
+		if (py <= y + 4 && py >= y - 4) {
+			//In vertical range
+			//Target acquired.....
+			int smlchance = (15 / thisGameWorld()->getLevel()) + 10;
+			int randSmore = rand() % smlchance;
+			if (randSmore == 1) //1 in smlChance chance
+			{
+
+				Actor* shoot = new Torpedo(false, thisGameWorld(), IID_TORPEDO, x - 14, y, 180); //Spawn 14 to left
+				thisGameWorld()->addActor(shoot);
+				thisGameWorld()->playSound(SOUND_TORPEDO);
+				return false;//dont continue
+			}
+
+		}
+	}
+}
+
+
+void Snagglegon::postDeath() {
+	(thisGameWorld())->incPlayerKillCount();
+	(thisGameWorld())->makeExplosion(getX(), getY());
+	//Make Explosion
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
  ///////////Projectile 
