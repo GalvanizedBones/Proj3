@@ -22,7 +22,7 @@ public:
 	bool isAlive() { return m_alive; }
 	void setAlive(bool alive) { m_alive = alive; }
 	bool Frednly() { return m_frendly;  }
-	void setFriendly(bool frendOrFoe) { m_frendly = frendOrFoe; }
+	void setFrendly(bool frendOrFoe) { m_frendly = frendOrFoe; }
 	virtual bool isProjectile() = 0;
 	virtual bool isBackground() = 0;
 	virtual bool isHuman() = 0; 
@@ -290,7 +290,7 @@ public:
 		:NonPlayerShootingActor(thisGameWorld, IID_SMALLGON, startX, startY, maxHp, 5, dir, size, depth, initSpecAmm, initCommAmm, flgtPthLgth, speed)
 	{ //Allow for short function call by default variables
 			//But also allows for potential 'Boss Smallgon' by slightly altering parameters
-		setFriendly(false);
+		setFrendly(false);
 	}
 	virtual bool isHuman() { return false; }
 	virtual void doSomething();
@@ -318,8 +318,13 @@ public:
 	virtual bool isAlien() { return false; }
 
 	virtual void collide(double damage) {
-		setAlive(false); //Cabbages are very weak
+		setAlive(false); //Projectiles are very weak
 	}
+
+	virtual void doSomething();
+
+	virtual void doSomethingSpecific() = 0;
+
 
 
 private:
@@ -334,13 +339,12 @@ public:
 	Cabbage(StudentWorld* thisGameWorld, int imageID, double startX, double startY, double damage = 2, Direction dir = 0, double size = 0.5, unsigned int depth = 1)
 	: Projectile(thisGameWorld, imageID, startX, startY, damage, dir, size, depth)
 {//Stars only exist
+		setFrendly(true);
 }
 
-	virtual void doSomething();
+	virtual void doSomethingSpecific();
 
-	virtual void collide(double damage) {
-			setAlive(false); //Cabbages are very weak
-		}
+
 private:
 
 };
@@ -350,13 +354,26 @@ public:
 	Turnip(StudentWorld* thisGameWorld, int imageID, double startX, double startY, double damage = 2, Direction dir = 0, double size = 0.5, unsigned int depth = 1)
 		: Projectile(thisGameWorld, imageID, startX, startY, damage, dir, size, depth)
 	{//Stars only exist
-		setFriendly(false);
+		setFrendly(false);
+	}
+	virtual void doSomethingSpecific();
+private:
+
+};
+
+class Torpedo : public Projectile {
+public:
+	Torpedo(bool frendOrfoe, StudentWorld* thisGameWorld, int imageID, double startX, double startY , Direction dir, double damage=8, double size = 0.5, unsigned int depth = 1)
+		: Projectile(thisGameWorld, imageID, startX, startY, damage, dir, size, depth)
+	{
+		setFrendly(frendOrfoe);
 	}
 
-	virtual void doSomething();
-
+	virtual void doSomethingSpecific();
 
 private:
+	
+
 
 };
 

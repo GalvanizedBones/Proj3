@@ -61,7 +61,11 @@
 			break;
 		}
 		case KEY_PRESS_TAB: //shoot torpedo
-		{	break;
+		{	
+			Actor* torp = new Torpedo(true, thisGameWorld(), IID_TORPEDO, X + 12, Y, 0);
+			thisGameWorld()->addActor(torp);
+			thisGameWorld()->playSound(SOUND_TORPEDO);
+			break;
 		}
 
 		}
@@ -231,31 +235,10 @@
  }
 
 
+ ///////////Projectile 
 
 
-
-
-
-
-
-
-
- ///////////////////CABBAGE
- void Cabbage::doSomething() {
-	 double X = getX();
-	 double Y = getY();
-	 X = X + 4; //move to the right each tick
-	 moveTo(X, Y);
-	 bool succ = (*thisGameWorld()).collisionCheck(this);
-
- }
-
-
-
-
- //////////////////////TURNIP
-
- void Turnip::doSomething() {
+ void Projectile::doSomething() {
 	 //1) Check if alive
 	 if (isAlive()) {
 
@@ -265,23 +248,16 @@
 			 if ((*thisGameWorld()).collisionCheck(this)) {
 				 //If collsion with player
 				 //Damage player  \
-				 //Set self dead   >taken care of in collide function
-				 //Do nothing else this tick
+				 				 //Set self dead   >taken care of in collide function
+//Do nothing else this tick
 				 return;
 			 }
+			
 
-			 //4) If not collided, move to the left by 6
-			 double X = getX();
-			 double Y = getY();
-			 X = X - 6; //move to the left each tick
-			 moveTo(X, Y);
+			 doSomethingSpecific();
+			 // 4 & 5 are specific to the projectile
 
-			 //5) rotate self 20 deg CCW
-			 //Use set direction function from graphObject
-			 setDirection(getDirection()-20); //Guessing CCW is negative?
-									//Seems setDirection funct makes postive anyways...
-
-			 //6) After moving, check again for a collision
+												//6) After moving, check again for a collision
 			 if ((*thisGameWorld()).collisionCheck(this)) {
 				 //Same as part 3
 				 return;
@@ -294,9 +270,51 @@
 	 }
 	 //Dont do anything if not alive
 
+ }
+
+
+
+
+
+
+ ///////////////////CABBAGE
+ void Cabbage::doSomethingSpecific() {
+	 double X = getX();
+	 double Y = getY();
+	 X = X + 8; //move 8 to the right each tick
+	 moveTo(X, Y);
+	 setDirection(getDirection() - 20);
 
  }
 
+
+
+
+ //////////////////////TURNIP
+
+ void Turnip::doSomethingSpecific() {
+	 //4) If not collided, move to the left by 6
+	 double X = getX();
+	 double Y = getY();
+	 X = X - 6; //move to the left each tick
+	 moveTo(X, Y);
+
+	 //5) rotate self 20 deg CCW
+	 //Use set direction function from graphObject
+	 setDirection(getDirection() - 20); //Guessing CCW is negative
+	 								    //Seems setDirection funct makes postive anyways...
+ }
+
+ void Torpedo::doSomethingSpecific() {
+	 double X = getX();
+	 double Y = getY();
+	 int step = 0;
+	 (Frednly()) ? (step = 8) : (step = -8);
+	 X = X + step;
+	 moveTo(X, Y);
+
+
+ }
 
  /////////////////Shootingactor
 
