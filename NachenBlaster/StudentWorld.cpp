@@ -100,10 +100,16 @@ while (doer != m_actorList.end()) { //Check for end of list
 			(*doer)->setAlive(false);
 		}
 
-
 		if (!m_player->isAlive()) { //Check if player is still alive
 			return GWSTATUS_PLAYER_DIED;
 		}
+		if (getPlayerKillCount() >= getLevelGoal()) {
+			//Beat the level!
+			advanceToNextLevel();
+			return GWSTATUS_FINISHED_LEVEL;
+		}
+
+
 	}
 
 	//If level completed
@@ -145,7 +151,7 @@ if (C < min) {
 
 	// S1/S chance for smallgon
 	int randS = rand() % S;
-	if (randS < S1*.05) {
+	if (randS < S1 *.05) {
 		//Make new smallgon
 		int randSY = rand() % VIEW_HEIGHT;
 		double smlHP = 5 * (1 + (getLevel() - 1)*.1);
@@ -181,8 +187,11 @@ void StudentWorld::cleanUp()
 
 void StudentWorld::addActor(Actor* newActor) {
 	m_actorList.push_back(newActor);
+}
 
-
+void StudentWorld::makeExplosion(int X, int Y) {
+	Actor* expl = new Explosion(IID_EXPLOSION, X, Y);
+	addActor(expl);
 }
 
 

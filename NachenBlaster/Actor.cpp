@@ -283,6 +283,7 @@ void ShootingActor::collide(double damage) {
 ///////////////SMALLGON
 void Smallgon::postDeath() {
         	(thisGameWorld())->incPlayerKillCount();
+			(thisGameWorld())->makeExplosion(getX(), getY());
 	//Make Explosion
 
 }

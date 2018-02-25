@@ -29,6 +29,7 @@ public:
 	double eucledianDist(Actor* source, Actor* target);
 	int getPlayerX() { return m_player->getX(); }
 	int getPlayerY() { return m_player->getY();  }
+	void makeExplosion(int X, int Y);
 
 
 	int getNPC_ScreenMax() { return m_npcScreenMax; }
@@ -43,9 +44,9 @@ public:
 	int getNPC_Count() { return m_npcCount; }
 	void incNPC_Count() { m_npcCount++; }
 	void decNPC_Count() { m_npcCount--; }
-
-
 	void resetNPC_Count() { m_npcCount = 0; }
+
+
 	int getLevelGoal() { return m_levelKillGoal; }
 	void setLevelGoal(int newLevelGoal) { m_levelKillGoal = newLevelGoal; }
 

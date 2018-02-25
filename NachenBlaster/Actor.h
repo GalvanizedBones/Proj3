@@ -28,6 +28,7 @@ public:
 	virtual bool isHuman() = 0; 
 	virtual bool isGoodie() = 0;
 	virtual bool isAlien() = 0;
+	virtual bool isOnTimer() = 0;
 
 private:
 	bool m_alive;
@@ -50,18 +51,79 @@ public:
 		moveTo(X, Y);
 
 	}
-	bool isProjectile() { return false; }
+	virtual bool isProjectile() { return false; }
 	virtual bool isBackground() { return true; }
 	virtual bool isHuman() {return false;}
 	virtual bool isGoodie() { return false; }
 	virtual bool isAlien() { return false; }
+	virtual bool isOnTimer() { return false; }
+
+
 private:
 };
 
-class CollideableActor : public Actor {
+class OnTimerActor : public Actor {
+public:
+	OnTimerActor(int imageID, double startX, double startY, Direction dir, double size, unsigned int depth)
+		:Actor(imageID, startX, startY, dir, size, depth),
+		m_onTimer(false),
+		m_timeLeft(0)
+	{
+
+	}
+
+	void setTimeLeft(int timer) { m_timeLeft = timer; }
+	void decTimeLeft() { m_timeLeft--; }
+	int getTimeLeft() { return m_timeLeft; }
+
+	void setOnTimer(bool onOroff) { m_onTimer = onOroff; }
+	virtual bool isOnTimer() {return m_onTimer;}
+	virtual bool isProjectile() { return false; }
+	virtual bool isBackground() { return true; }
+	virtual bool isHuman() { return false; }
+	virtual bool isGoodie() { return false; }
+	virtual bool isAlien() { return false; }
+
+private:
+	bool m_onTimer;
+	int m_timeLeft;
+
+};
+
+class Explosion : public OnTimerActor {
+public:
+	Explosion(int imageID, double startX, double startY, Direction dir=0, double size=1, unsigned int depth=0)
+		:OnTimerActor(imageID, startX, startY, dir, size, depth),
+		m_explosionSize(size)
+	{
+		setOnTimer(true);
+		setTimeLeft(4); //4 tick lifespan
+	}
+
+	virtual void doSomething() {
+		//Increase in size 1.5 times
+		//Reduce timer life by 1
+			//Out of initial of 4
+		if (getTimeLeft() > 0) { //Still have time left
+			setSize(m_explosionSize);
+			m_explosionSize = m_explosionSize * 1.5;
+			decTimeLeft();
+		}
+		else {
+			setAlive(false);
+		}
+	}
+
+private:
+	double m_explosionSize;
+
+
+};
+
+class CollideableActor : public OnTimerActor {
 public:
 	CollideableActor(StudentWorld* thisGameWorld, int imageID, double startX, double startY, double damage, Direction dir, double size, unsigned int depth)
-		:Actor(imageID, startX, startY, dir, size, depth),
+		:OnTimerActor(imageID, startX, startY, dir, size, depth),
 		m_gameWorld(thisGameWorld),
 		m_collisionDamage(damage)
 	{
