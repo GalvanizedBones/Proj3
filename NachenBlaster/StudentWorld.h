@@ -30,6 +30,8 @@ public:
 	double eucledianDist(Actor* source, Actor* target);
 	int getPlayerX() { return m_player->getX(); }
 	int getPlayerY() { return m_player->getY();  }
+	void healPlayer(double heal) { m_player->increaseHealth(heal); }
+	void givePlayerSAmmo(double sAmmoPickup) { m_player->addSpecAmmo(sAmmoPickup); }
 	void makeExplosion(int X, int Y);
 
 
@@ -51,6 +53,8 @@ public:
 	int getLevelGoal() { return m_levelKillGoal; }
 	void setLevelGoal(int newLevelGoal) { m_levelKillGoal = newLevelGoal; }
 
+	void updateScoreBoard();
+
 
 
 
@@ -58,7 +62,7 @@ public:
 private:
 
 	std::list<Actor*> m_actorList;//The list of actors *Game foundation*
-	Actor* m_player;//The pointer to the player
+	NachenBlaster* m_player;//The pointer to the player
 	int m_npcScreenMax; 
 	int m_playerKillCount;
 	int m_levelKillGoal;

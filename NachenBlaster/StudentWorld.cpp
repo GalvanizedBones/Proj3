@@ -2,6 +2,10 @@
 #include "GameConstants.h"
 #include <string>
 #include <stdlib.h> 
+
+#include <sstream>  // defines the type std::ostringstream
+#include <iomanip>  // defines the manipulator setw
+
 using namespace std;
 
 GameWorld* createStudentWorld(string assetDir)
@@ -25,7 +29,7 @@ int StudentWorld::init()
 	setNPC_ScreenMax(5 + .5*getLevel()); //compiler always truncates -- in player favor -- cant have 1/2 an alien
 	setLevelGoal(6 + (4 * getLevel()) );
 	
-	Actor* player = new NachenBlaster(this, IID_NACHENBLASTER, 0, 128);
+	NachenBlaster* player = new NachenBlaster(this, IID_NACHENBLASTER, 0, 128);
 	m_player = player;
 	m_actorList.push_back(player);
 
@@ -101,6 +105,7 @@ while (doer != m_actorList.end()) { //Check for end of list
 		}
 
 		if (!m_player->isAlive()) { //Check if player is still alive
+			decLives();
 			return GWSTATUS_PLAYER_DIED;
 		}
 		if (getPlayerKillCount() >= getLevelGoal()) {
@@ -144,8 +149,8 @@ int C = getNPC_Count();
 if (C < min) {
 
 	//5) to make a new alien ship
-	int S1 = 0; //60
-	int S2 = 0 + getLevel() * 5; //20
+	int S1 = 60; //60
+	int S2 = 20 + getLevel() * 5; //20
 	int S3 = 5 + getLevel() * 10;
 	int S = S1 + S2 + S3;
 
@@ -178,13 +183,39 @@ if (C < min) {
 	}
 
 
+
+
 }
 
 
 
-
-decLives();
+//Update score board
+updateScoreBoard();
 return GWSTATUS_CONTINUE_GAME;
+}
+
+
+void StudentWorld::updateScoreBoard() {
+	int lives = getLives();
+	int health = m_player->getHealth()*2;
+	int score = getScore();
+	int level = getLevel();
+	int curCab = m_player->getCommAmmoSupply()*100/30;
+	int torpedos = m_player->getSpecAmmoSupply(); 
+
+
+	ostringstream oss;
+	oss << "Lives:" << setw(3) << lives << "  ";
+	oss << "Health:" << setw(4) << health << "%" << "  ";
+	oss << "Score:" << setw(6) << score << "  ";
+	oss << "Level:" << setw(3) << level << "  ";
+	oss << "Cabbages:" << setw(4) << curCab << "%"<< "  ";
+	oss << "Torpedos:" << setw(3) << torpedos << "  ";
+
+	string s = oss.str();
+
+	setGameStatText(s);
+
 }
 
 void StudentWorld::cleanUp()
@@ -281,12 +312,13 @@ bool StudentWorld::collisionCheck(Actor* hitter) {
 	it = m_actorList.begin();
 	double R1 = (*hitter).getRadius();
 	
-	while (it != m_actorList.end() && (*hitter).isAlive() ){
+	while (it != m_actorList.end() && (*hitter).isAlive()  ){
 	//loop through every member of list
 		if (!(**it).isBackground() && !(**it).isGoodie() && (**it).isAlive() && (*it)!=hitter )
 		{//Only collideable objects
 			double R2 = (**it).getRadius();
-			if (eucledianDist(hitter, (*it)) < .75 * (R1 + R2)  ) {
+			if (eucledianDist(hitter, (*it)) < .75 * (R1 + R2)  ) 
+			{
 				//Within range of each other
 				//Officially collided!
 					//Call do damage to each function
@@ -317,7 +349,7 @@ bool StudentWorld::collisionCheck(Actor* hitter) {
 						else { it++; }
 					}
 					else { it++; }
-				}
+				 }
 
 
 

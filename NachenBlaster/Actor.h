@@ -19,6 +19,8 @@ public:
 	virtual void doSomething() = 0;
 	virtual void collide(double dam) {}; //Default do nothing
 	virtual double getDamage() { return 0; };//Default do nothing
+	virtual void increaseHealth(double heal) {}; //Default do nothing
+	virtual void addSpecAmmo(double sAmmoPickup) {}; //Default do nothing
 	bool isAlive() { return m_alive; }
 	void setAlive(bool alive) { m_alive = alive; }
 	bool Frednly() { return m_frendly;  }
@@ -177,8 +179,21 @@ public:
 		}
 	}
 
+	virtual void increaseHealth(double heal) {
+		m_HP = m_HP + heal;
+		if (m_HP > m_maxHP) {
+			m_HP = m_maxHP; //No overheals
+		}
+	}
+
 	double getHealth() {
 		return m_HP;
+	}
+
+
+
+	void addCommAmmo(double cAmmo) {
+		m_commonAmmo = m_commonAmmo + cAmmo;
 	}
 
 	void subractCommAmmo(double cAmmoUsed) {
@@ -196,6 +211,13 @@ public:
 		if (m_specialAmmo < 0) {
 			m_specialAmmo = 0; //no such thing as bullet debt
 		}
+	}
+
+	void addSpecAmmo(double sAmmoPickup) {
+		m_specialAmmo = m_specialAmmo + sAmmoPickup;
+		//No upper limit!
+			//Asking for an overflow....
+
 	}
 	double getSpecAmmoSupply() {
 		return m_specialAmmo;
@@ -262,7 +284,7 @@ class NachenBlaster : public ShootingActor {
 	//The Player Character
 public:
 	NachenBlaster(StudentWorld* thisGameWorld, int imageID, double startX, double startY)
-		: ShootingActor(thisGameWorld, imageID, startX, startY,  500,  50, 0, 1, 0, 0, 30)
+		: ShootingActor(thisGameWorld, imageID, startX, startY,  50,  5000, 0, 1, 0, 0, 30)
 															//Coll Dam    //dir  //depth //initComm(30Cabb)
 																     //HP    //Size //initSpec(0Torp)
 		{}
@@ -270,7 +292,11 @@ public:
 	virtual bool isHuman() { return true; }
 	virtual bool isAlien() { return false; }
 	virtual void postDeath() {};
-
+	virtual void refillCommAmmo() {
+		if (getCommAmmoSupply() < 30) {
+			addCommAmmo(1); //Only add ammo if not topped off
+		}
+	}
 
 
 private:
@@ -432,6 +458,7 @@ public:
 	virtual bool doSomethingGood() = 0;
 
 	virtual void collide(double damage) {};
+	virtual bool isGoodie() { return true; }
 
 
 
@@ -449,10 +476,30 @@ public:
 	virtual bool doSomethingGood();
 
 private:
-
-
-
 };
+
+
+class Repair : public Goodie {
+public:
+	Repair(StudentWorld* thisGameWorld, int imageID, double startX, double startY, Direction dir = 0, double size = .5, unsigned int depth = 1)
+		:Goodie(thisGameWorld, imageID, startX, startY, dir, size, depth)
+	{}
+
+	virtual bool doSomethingGood();
+private:
+};
+
+
+class SpecAmmo : public Goodie {
+public:
+	SpecAmmo(StudentWorld* thisGameWorld, int imageID, double startX, double startY, Direction dir = 0, double size = .5, unsigned int depth = 1)
+		:Goodie(thisGameWorld, imageID, startX, startY, dir, size, depth)
+	{}
+
+	virtual bool doSomethingGood();
+private:
+};
+
 
 
 #endif // ACTOR_H_

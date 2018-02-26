@@ -7,6 +7,10 @@
 
 
  void NachenBlaster::doSomething() {
+
+	 refillCommAmmo();
+
+
 	//shoot cabbage
 	//shoot torpedo
 	//move up/down/left/right
@@ -54,16 +58,23 @@
 			break;
 		}
 		case KEY_PRESS_SPACE: //shoot cabbage
-		{	Actor* shoot = new Cabbage(thisGameWorld(), IID_CABBAGE, X+12, Y); //Spawn 12 to right
-			thisGameWorld()->addActor(shoot); //Add new object to game's object list
-			thisGameWorld()->playSound(SOUND_PLAYER_SHOOT);
+		{	
+			if (getCommAmmoSupply() >= 5 ) {
+				Actor* shoot = new Cabbage(thisGameWorld(), IID_CABBAGE, X + 12, Y); //Spawn 12 to right
+				subractCommAmmo(5);
+				thisGameWorld()->addActor(shoot); //Add new object to game's object list
+				thisGameWorld()->playSound(SOUND_PLAYER_SHOOT);
+			}
 			break;
 		}
 		case KEY_PRESS_TAB: //shoot torpedo
 		{	
-			Actor* torp = new Torpedo(true, thisGameWorld(), IID_TORPEDO, X + 12, Y, 0);//Spawn 12 to right
-			thisGameWorld()->addActor(torp);//Add new object to game's object list
-			thisGameWorld()->playSound(SOUND_TORPEDO);
+			if (getSpecAmmoSupply() > 0) {
+				Actor* torp = new Torpedo(true, thisGameWorld(), IID_TORPEDO, X + 12, Y, 0);//Spawn 12 to right
+				subractSpecAmmo(1);
+				thisGameWorld()->addActor(torp);//Add new object to game's object list
+				thisGameWorld()->playSound(SOUND_TORPEDO);
+			}
 			break;
 		}
 
@@ -197,6 +208,7 @@
 
 
 
+ ///////////////SMALLGON
  bool Smallgon::doSomethingSpecialNPC() {
 	 //Nows your time Smallgon! To action!
 
@@ -233,6 +245,15 @@
 	 
 	 
  }
+
+
+ void Smallgon::postDeath() {
+	 (thisGameWorld())->incPlayerKillCount();
+	 (thisGameWorld())->makeExplosion(getX(), getY());	 //Make Explosion
+	 (thisGameWorld())->increaseScore(250); //increase score
+
+ }
+
 
 
  ///////////////////////////SMOREGON
@@ -278,9 +299,24 @@ bool Smoregon::doSomethingSpecialNPC() {
  }
 
 void Smoregon::postDeath() {
-	(thisGameWorld())->incPlayerKillCount();
-	(thisGameWorld())->makeExplosion(getX(), getY());
-	//Make Explosion
+	(thisGameWorld())->incPlayerKillCount(); //Increment to goal
+	(thisGameWorld())->makeExplosion(getX(), getY()); 	//Make Explosion
+	(thisGameWorld())->increaseScore(250); //increase score
+
+
+	//50/50 chance to make repair or torpedo goodie
+	int smrGdy = rand() % 3; 
+	if (smrGdy == 1) {
+		int fiftyfifty = rand() % 2;
+		if (fiftyfifty) {
+			Actor* rprGdy = new Repair(thisGameWorld(), IID_REPAIR_GOODIE, getX(), getY());
+			thisGameWorld()->addActor(rprGdy);
+		}
+		else {
+			Actor* specAmm = new SpecAmmo(thisGameWorld(), IID_TORPEDO_GOODIE, getX(), getY());
+			thisGameWorld()->addActor(specAmm);
+		}
+	}
 
 }
 
@@ -338,6 +374,7 @@ bool Snagglegon::doSomethingSpecialNPC() {
 void Snagglegon::postDeath() {
 	(thisGameWorld())->incPlayerKillCount();
 	(thisGameWorld())->makeExplosion(getX(), getY());//Make Explosion
+	(thisGameWorld())->increaseScore(1000); //increase score
 
 	//Small chance to make extra life goodie
 	int lifeGdy = rand() % 6;
@@ -468,18 +505,16 @@ void ShootingActor::collide(double damage) {
 	 //or a collision with another ship!
 	 if (getHealth() < 0) {
 		 setAlive(false);
+			 thisGameWorld()->playSound(SOUND_DEATH);
 		 postDeath(); 
+	 }
+	 else {
+		 //still alive
+			//make blast sound
+		 thisGameWorld()->playSound(SOUND_BLAST);
 	 }
  }
 
-
-///////////////SMALLGON
-void Smallgon::postDeath() {
-        	(thisGameWorld())->incPlayerKillCount();
-			(thisGameWorld())->makeExplosion(getX(), getY());
-	//Make Explosion
-
-}
 
 
 
@@ -573,9 +608,29 @@ void Goodie::doSomething() {
 bool ExtraLife::doSomethingGood() {
 	//Add life 
 	//Add score
-
 	thisGameWorld()->incLives();
-
+	(thisGameWorld())->increaseScore(100); //increase score
 	return true;
+}
 
+///////// Repair
+bool Repair::doSomethingGood() {
+
+	//Add score
+	//Increase player health by ten
+		//Only if health is equal to or less than 40 
+		//Else, set to 50 (the max)
+	thisGameWorld()->healPlayer(10);
+	(thisGameWorld())->increaseScore(100); //increase score
+	return true;
+}
+
+
+///////// SpecAmmo
+bool SpecAmmo::doSomethingGood() {
+	//Add Score
+	//Increase ammo count
+	thisGameWorld()->givePlayerSAmmo(5); //Give 5 torpedos
+	(thisGameWorld())->increaseScore(100); //increase score
+	return true;
 }
