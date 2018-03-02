@@ -467,7 +467,7 @@ void Snagglegon::postDeath() {
 	 double Y = getY();
 	 X = X + 8; //move 8 to the right each tick
 	 moveTo(X, Y);
-	 setDirection(getDirection() - 20);
+	 setDirection(getDirection() + 20);
 
  }
 
