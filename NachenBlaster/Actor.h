@@ -7,7 +7,7 @@
 
 class StudentWorld; 
 
-class Actor:public GraphObject {
+class Actor :public GraphObject {
 	//Actor is abstract, will not be possible to construct
 public:
 	Actor(int imageID, double startX, double startY, Direction dir = 0, double size = 1.0, unsigned int depth = 0)
@@ -23,14 +23,16 @@ public:
 	virtual void addSpecAmmo(double sAmmoPickup) {}; //Default do nothing
 	bool isAlive() { return m_alive; }
 	void setAlive(bool alive) { m_alive = alive; }
-	bool Frednly() { return m_frendly;  }
+	bool Frednly() { return m_frendly; }
 	void setFrendly(bool frendOrFoe) { m_frendly = frendOrFoe; }
 	virtual bool isProjectile() = 0;
 	virtual bool isBackground() = 0;
-	virtual bool isHuman() = 0; 
+	virtual bool isHuman() = 0;
 	virtual bool isGoodie() = 0;
 	virtual bool isAlien() = 0;
 	virtual bool isOnTimer() = 0;
+
+	virtual ~Actor() {}
 
 private:
 	bool m_alive;
@@ -61,6 +63,8 @@ public:
 	virtual bool isOnTimer() { return false; }
 
 
+	virtual ~Star() {}
+
 private:
 };
 
@@ -86,6 +90,8 @@ public:
 	virtual bool isGoodie() { return false; }
 	virtual bool isAlien() { return false; }
 
+
+	virtual ~OnTimerActor() {}
 private:
 	bool m_onTimer;
 	int m_timeLeft;
@@ -116,6 +122,8 @@ public:
 		}
 	}
 
+	virtual ~Explosion() {}
+
 private:
 	double m_explosionSize;
 
@@ -145,7 +153,7 @@ public:
 
 	virtual void collide(double damage) = 0; //ensure astract class
 
-
+	virtual ~CollideableActor() {}
 
 private:
 	StudentWorld* m_gameWorld;
@@ -227,7 +235,7 @@ public:
 	virtual void postDeath() = 0;
 	virtual bool isAlien() = 0;
 
-
+	virtual ~ShootingActor() {}
 
 
 private:
@@ -271,6 +279,8 @@ public:
 	bool checkTopOrBottom(int y);
 	bool isAlien() {return true;}
 
+	virtual ~NonPlayerShootingActor() {}
+
 
 
 private: 
@@ -298,6 +308,7 @@ public:
 		}
 	}
 
+	virtual ~NachenBlaster() {  }
 
 private:
 
@@ -314,6 +325,9 @@ public:
 	virtual bool isHuman() { return false; }
 	virtual bool doSomethingSpecialNPC();
 	virtual void postDeath(); 
+
+	virtual ~Smallgon() {}
+
 private:
 };
 
@@ -327,6 +341,9 @@ public:
 	virtual bool isHuman() { return false; };
 	virtual bool doSomethingSpecialNPC();
 	virtual void postDeath();
+
+	virtual ~Smoregon() {}
+
 private:
 };
 
@@ -342,25 +359,11 @@ public:
 	virtual bool doSomethingSpecialNPC();
 	virtual void postDeath();
 
-
+	virtual ~Snagglegon() {}
+	
 private:
-
-
-
-
-
+	
 };
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -386,8 +389,8 @@ public:
 	virtual void doSomething();
 
 	virtual void doSomethingSpecific() = 0;
-
-
+	
+	virtual ~Projectile() {}
 
 private:
 
@@ -405,7 +408,8 @@ public:
 }
 
 	virtual void doSomethingSpecific();
-
+	
+	virtual ~Cabbage() {}
 
 private:
 
@@ -419,6 +423,9 @@ public:
 		setFrendly(false);
 	}
 	virtual void doSomethingSpecific();
+
+	virtual ~Turnip() {}
+
 private:
 
 };
@@ -432,6 +439,8 @@ public:
 	}
 
 	virtual void doSomethingSpecific();
+
+	virtual ~Torpedo() {}
 
 private:
 };

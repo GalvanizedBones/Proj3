@@ -1,7 +1,6 @@
 #include "StudentWorld.h"
 #include "GameConstants.h"
 #include <string>
-#include <stdlib.h> 
 
 #include <sstream>  // defines the type std::ostringstream
 #include <iomanip>  // defines the manipulator setw
@@ -36,9 +35,9 @@ int StudentWorld::init()
 	//Generate random star background
 	int numberOfInitStars = 30;
 	for (int i = 0; i < numberOfInitStars; i++) {
-		double randx = rand() % VIEW_WIDTH;
-		double randy = rand() % VIEW_HEIGHT;
-		double randsize = ((double)(rand() % 45) / 100) + .05;
+		double randx = randInt(0, VIEW_WIDTH - 1); //% VIEW_WIDTH;
+		double randy = randInt(0, VIEW_HEIGHT - 1);// % VIEW_HEIGHT;
+		double randsize = ((double)(randInt(0,45-1)) / 100) + .05;
 
 		Actor* bkgrndStar = new Star(IID_STAR, randx, randy, 0, randsize, 3);
 		m_actorList.push_back(bkgrndStar);
@@ -111,6 +110,7 @@ while (doer != m_actorList.end()) { //Check for end of list
 		if (getPlayerKillCount() >= getLevelGoal()) {
 			//Beat the level!
 			//advanceToNextLevel(); **not to be used by student
+			playSound(SOUND_FINISHED_LEVEL);
 			return GWSTATUS_FINISHED_LEVEL;
 		}
 
@@ -127,10 +127,10 @@ while (doer != m_actorList.end()) { //Check for end of list
 buryTheDead();
 
 //4)1/15 to make a new star
-int newStar = rand() % 15;
+int newStar = randInt(0, 15-1); //% 15;
 if (newStar == 7) { //Lucky number seven babyyyy
-	int randY = rand() % VIEW_HEIGHT;
-	double randsize = ((double)(rand() % 45) / 100) + .05;
+	int randY = randInt(0, VIEW_HEIGHT - 1); //% VIEW_HEIGHT;
+	double randsize = ((double)(randInt(0,45-1)) / 100) + .05;
 	Actor* bornStar = new Star(IID_STAR, VIEW_WIDTH - 1, randY, 0, randsize, 3);
 	m_actorList.push_back(bornStar);
 }
@@ -155,27 +155,33 @@ if (C < min) {
 	int S = S1 + S2 + S3;
 
 	// S1/S chance for smallgon
-	int randS = rand() % S;
+	//int randS = rand() % S;
+	int randS = randInt(0, S-1);
 	if (randS < S1 ) {
 		//Make new smallgon
-		int randSmlY = rand() % VIEW_HEIGHT;
+		//int randSmlY = rand() % VIEW_HEIGHT;
+		int randSmlY = randInt(0, VIEW_HEIGHT - 1);
 		double smlHP = 5 * (1 + (getLevel() - 1)*.1);
 		Actor* newSmallgon = new Smallgon(this, VIEW_WIDTH - 1, randSmlY, smlHP);
 		m_actorList.push_back(newSmallgon);
 		incNPC_Count();
 	}
 
+	//S2/S chance of smoregon
 	else if (randS < (S1 + S2) && randS > S1) {
 		//Make new smoregon
-		int randSmrY = rand() % VIEW_HEIGHT;
+		//int randSmrY = rand() % VIEW_HEIGHT;
+		int randSmrY = randInt(0, VIEW_HEIGHT - 1);
 		double smrHP = 5 * (1 + (getLevel() - 1)*.1);
 		Actor* newSmoregon = new Smoregon(this, VIEW_WIDTH - 1, randSmrY, smrHP);
 		m_actorList.push_back(newSmoregon);
 		incNPC_Count();
 	}
 
+	//S3/S chance for snagglegon
 	else if (randS > (S1 + S2)) {
-		int randSngY = rand() % VIEW_HEIGHT;
+		//int randSngY = rand() % VIEW_HEIGHT;
+		int randSngY = randInt(0, VIEW_HEIGHT - 1);
 		double sngHP = 10 * (1 + (getLevel() - 1)*.1);
 		Actor* newSnagglegon = new Snagglegon(this, VIEW_WIDTH - 1, randSngY, sngHP);
 		m_actorList.push_back(newSnagglegon);

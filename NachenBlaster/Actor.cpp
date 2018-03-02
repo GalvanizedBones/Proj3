@@ -126,10 +126,10 @@
 					 //i) left and up
 					 //ii) due left
 					 //iii) left and down
-					 int Rdir = (rand() % 3) - 1;
+					 int Rdir = (randInt(0,2)) - 1;
 					 setOrientation(Rdir);
 
-					 int Rpth = (rand() % 32) + 1;
+					 int Rpth = (randInt(0,31)) + 1;
 					 setNPCPAthLength(Rpth);
 				 }
 				 else {
@@ -139,7 +139,7 @@
 					 //iii) left and down
 					 //Randomly select flight path
 					 // inbetween 1 and 32
-					 int Rdir = (rand() % 3) - 1;
+					 int Rdir = (randInt(0,2)) - 1;
 					 setOrientation(Rdir);
 				 }
 
@@ -182,7 +182,8 @@
 					 }
 					 break;
 				 default:
-					 std::cerr << "errOrientation";
+					 break;
+					 //std::cerr << "errOrientation";
 				 }
 
 				 //7) After moving, check again for a collision
@@ -231,7 +232,7 @@
 			 //In vertical range
 			 //Target acquired.....
 			 int smlchance = (20 / thisGameWorld()->getLevel()) + 5;
-			 int randSShoot = rand() % smlchance;
+			 int randSShoot = randInt(0, smlchance); //% smlchance;
 			 if (randSShoot == 1) //1 in smlChance chance
 			 {
 				 Actor* shoot = new Turnip(thisGameWorld(), IID_TURNIP, x - 16, y); //Spawn 12 to right
@@ -242,6 +243,7 @@
 			 }
 		 }
 	 }
+	 return true;
 	 
 	 
  }
@@ -278,7 +280,7 @@ bool Smoregon::doSomethingSpecialNPC() {
 			 //In vertical range
 			 //Target acquired.....
 			 int smlchance = (20 / thisGameWorld()->getLevel()) + 5;
-			 int randSmore = rand() % smlchance;
+			 int randSmore = randInt(0, smlchance);// % smlchance;
 			 if (randSmore == 1) //1 in smlChance chance
 			 {
 				 Actor* shoot = new Turnip(thisGameWorld(), IID_TURNIP, x - 14, y); //Spawn 14 to left
@@ -295,6 +297,7 @@ bool Smoregon::doSomethingSpecialNPC() {
 			 }
 		 }
 	 }
+	 return true;
 
  }
 
@@ -305,9 +308,9 @@ void Smoregon::postDeath() {
 
 
 	//50/50 chance to make repair or torpedo goodie
-	int smrGdy = rand() % 3; 
+	int smrGdy = randInt(0, 3);// % 3; 
 	if (smrGdy == 1) {
-		int fiftyfifty = rand() % 2;
+		int fiftyfifty = randInt(0, 2);// % 2;
 		if (fiftyfifty) {
 			Actor* rprGdy = new Repair(thisGameWorld(), IID_REPAIR_GOODIE, getX(), getY());
 			thisGameWorld()->addActor(rprGdy);
@@ -326,7 +329,7 @@ bool Snagglegon::doSomethingSpecialNPC() {
 
 	//Make sure never moves due left
 	if (getOrientation() == 0) {
-		int fiftyfifty = rand() % 2;
+		int fiftyfifty = randInt(0,1);// % 2;
 		if (fiftyfifty) {
 			setOrientation(1);
 		}
@@ -356,7 +359,7 @@ bool Snagglegon::doSomethingSpecialNPC() {
 			//In vertical range
 			//Target acquired.....
 			int smlchance = (15 / thisGameWorld()->getLevel()) + 10;
-			int randSmore = rand() % smlchance;
+			int randSmore = randInt(0, smlchance-1);// % smlchance;
 			if (randSmore == 1) //1 in smlChance chance
 			{
 
@@ -368,6 +371,7 @@ bool Snagglegon::doSomethingSpecialNPC() {
 
 		}
 	}
+	return true;
 }
 
 
@@ -377,7 +381,7 @@ void Snagglegon::postDeath() {
 	(thisGameWorld())->increaseScore(1000); //increase score
 
 	//Small chance to make extra life goodie
-	int lifeGdy = rand() % 6;
+	int lifeGdy = randInt(0, 5);// % 6;
 	if (lifeGdy == 1) {
 		Actor* lifeGdy = new ExtraLife( thisGameWorld(), IID_LIFE_GOODIE, getX(), getY() );
 		thisGameWorld()->addActor(lifeGdy);
@@ -427,7 +431,7 @@ void Snagglegon::postDeath() {
 			 //3) Check if collided yet
 			 if ((*thisGameWorld()).collisionCheck(this)) {
 				 //If collsion with player
-				 //Damage player  \
+				 //Damage player  
 				 				 //Set self dead   >taken care of in collide function
 //Do nothing else this tick
 				 return;
